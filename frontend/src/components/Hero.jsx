@@ -4,7 +4,7 @@ import { MdOutlineLocalOffer } from 'react-icons/md'
 
 const Hero = () => {
   return (
-    <section className='relative bg-center bg-no-repeat h-screen w-full'>
+    <section className='relative bg-hero bg-center bg-no-repeat h-screen w-full'>
         <div className="max_padd_container relative top-10 xs:top-52">
             <h1 className='h3 max-w-[37rem]'> The perfect way to convert your traffic into sales  </h1>
             <p className='text-gray-50 regular-16 mt-6 max-w-[33rem]'>
