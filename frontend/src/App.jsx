@@ -4,8 +4,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Home from "./pages/Home"
 import Category from "./pages/Category"
 import Cart from "./pages/Cart"
-import Login from "./pages/Login"
+import SignUp from "./pages/Signup"
 import Product from "./pages/Product"
+import Login from "./pages/Login"
 
 //import images
 import bannermen from "./assets/bannermens.png"
@@ -25,6 +26,7 @@ export default function App() {
             <Route path="/product/:productId" element={<Product />}/>
               {/*<Route path=":productId" element={<Product/>}/> */}
             <Route path="/cart-page" element={<Cart />}/>
+            <Route path="/signup" element={<SignUp />}/>
             <Route path="/login" element={<Login />}/>
         </Routes>
         <Footer />
