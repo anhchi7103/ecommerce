@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom"
 import ProductHd from '../components/ProductHd';
 import ProductDisplay from '../components/ProductDisplay';
 import ProductDescription from '../components/ProductDescription';
+import ProductSuggestion from '../components/ProductSuggestion';
 
 const Product = () => {
   const {all_products} = useContext(ShopContext);
@@ -19,6 +20,7 @@ const Product = () => {
         <ProductHd product={product}/>
         <ProductDisplay product={product}/>
         <ProductDescription />
+        <ProductSuggestion suggested_products={all_products}/>
       </div>
     </section>
   )
