@@ -3,6 +3,7 @@ import product_rt_2 from '../assets/product_rt_2.png'
 import product_rt_3 from '../assets/product_rt_3.png'
 import product_rt_4 from '../assets/product_rt_4.png'
 import { MdStar } from 'react-icons/md'
+import {FaHeart} from 'react-icons/fa'
 
 const ProductDisplay = (props) => {
 
@@ -47,7 +48,10 @@ const ProductDisplay = (props) => {
               <div className='ring-2 ring-slate-900 h-10 w-10 flexCenter cursor-pointer'>XL</div>
             </div>
             <div className='flex flex-col gap-y-3 mb-4 max-w-[555px]'>
-              <button className='btn_dark_outline !rounded-none uppercase reguar-14 tracking-widest'>Add to cart</button>
+              <div className='flex flex-row'>
+                <button className='btn_dark_outline !rounded-none uppercase reguar-14 tracking-widest xl:flex-1'>Add to cart</button>
+                <button className='btn_secondary_rounded !rounded-none'> {<FaHeart />} </button>
+              </div>
               <button className='btn_dark_rounded !rounded-none uppercase reguar-14 tracking-widest'>Buy now</button>
             </div>
             <p><span className='medium-16 text-tertiary'>Category: </span> Women | Jacket | Winter</p>
