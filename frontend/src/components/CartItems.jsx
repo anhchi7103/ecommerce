@@ -1,9 +1,10 @@
 import { useContext } from 'react'
 import { ShopContext } from '../Context/ShopContext';
+import { TbTrash } from 'react-icons/tb';
 
 
 const CartItems = () => {
-    const { cartItems } = useContext(ShopContext);
+    const { cartItems, all_products, removeFromCart, getTotalCartAmount } = useContext(ShopContext);
 
     return (
         <section className='max_padd_container pt-28'>
@@ -18,11 +19,12 @@ const CartItems = () => {
                         <th className='p-1 py-2'> Remove </th>
                     </tr>
                 </thead>
+                {/* cart */}
                 <tbody>
-                    {/*Object.values(cartItems).map((item) => {
+                    {Object.values(cartItems).map((item) => {
                         if (item.quantity > 0) {
                             return (
-                                <tr /*key={item.MaMon} className='border-b border-slate-900/20 p-6 medium-14 text-center'>
+                                <tr key={item.id} className='border-b border-slate-900/20 p-6 medium-14 text-center'>
                                     <td className='flexCenter'>
                                         <img src={item.image} alt="prdctImg" height={43} width={43} className='rounded-lg ring-1 ring-slate-900/5 my-1' />
                                     </td>
@@ -30,29 +32,23 @@ const CartItems = () => {
                                         <div className='line-clamp-3'>{item.name}</div>
                                     </td>
                                     <td>
-                                        {item.new_price.toLocaleString("vi-VN", {
-                                            style: "currency",
-                                            currency: "VND",
-                                        })}
+                                        {item.new_price}
                                     </td>
                                     <td className='w-16 h-16'>{item.quantity}</td>
-                                    <td>{(item.new_price * item.quantity).toLocaleString("vi-VN", {
-                                        style: "currency",
-                                        currency: "VND",
-                                    })}</td>
+                                    <td>{(item.new_price * item.quantity)}</td>
                                     <td>
                                         <div className='bold-22 pl-14'>
-                                            <TbTrash onClick={() => removeFromCart(item.MaMon)} />
+                                            <TbTrash onClick={() => removeFromCart(item.id)} />
                                         </div>
                                     </td>
                                 </tr>
                             );
                         }
-                    })*/}
+                    })}
 
                 </tbody>
             </table>
-            {/* cart details */}
+            {/* receipt */}
             <div className='flexCenter'>
                 <div className='flexCenter flex-col gap-20 my-16 p-8 md:flex-row rounded-md bg-white w-full max-w-[800px]'>
                     <div className='flex flex-col gap-10'>
@@ -60,8 +56,7 @@ const CartItems = () => {
                         <div className='flex-row w-60'>
                             <div className='flexBetween py-4'>
                                 <h4 className='medium-16'>Total:</h4>
-                                {/*<h4 className='text-gray-30 font-semibold'>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(getTotalCartAmount())}</h4>
-                                */}
+                                <h4 className='text-gray-30 font-semibold'>{getTotalCartAmount()}</h4>
                             </div>
                             <hr />
                             <div className='flexBetween py-4'>
@@ -88,9 +83,9 @@ const CartItems = () => {
                         <button /*onClick={handleCheckout}*/ className='btn_dark_rounded w-44'>Thanh toán</button>
                     </div>
                     <div className='flex flex-col gap-10'>
-                        <h4 className='bold-20'>Mã thẻ thành viên: </h4>
+                        <h4 className='bold-20'>Discount code: </h4>
                         <div className='flexBetween pl-5 h-12 bg-primary rounded-full ring-1 ring-slate-900/10'>
-                            <input type="text" placeholder='CardID' className='bg-transparent border-none outline-none' /*value={cardID} onChange={(e) => setCard(e.target.value)} *//>
+                            <input type="text" placeholder='Code' className='bg-transparent border-none outline-none' /*value={cardID} onChange={(e) => setCard(e.target.value)} *//>
                             <button /*onClick={handleCheckCard}*/ className='btn_dark_rounded' >Kiểm tra hợp lệ</button>
                         </div>
                     </div>
