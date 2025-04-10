@@ -16,8 +16,9 @@
 5. Kiểm tra server frontend trên port 5173
 
 # Chạy Backend
-1. Mở terminal
-2. Kiểm tra đường dẫn đến folder backend, chỉnh sửa nếu cần thiết.
-3. Chạy lệnh "npm i" để tải các package cần thiết
-4. Chạy lệnh "npm start" để start server
-5. Kiểm tra server frontend trên port 5000
+1. Tạo file ".env", tạo các biến môi trường.
+2. Mở terminal
+3. Kiểm tra đường dẫn đến folder backend, chỉnh sửa nếu cần thiết.
+4. Chạy lệnh "npm i [tên package]" để tải các package cần thiết.
+5. Chạy lệnh "npm start" để start server
+6. Kiểm tra server backend trên các port tương ứng.
