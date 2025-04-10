@@ -1,10 +1,16 @@
-require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const mongoose = require("mongoose");
 const redisClient = require('./model/dbConfig');
+const jwt = require("jsonwebtoken");
+const path = require("path");
+const multer = require("multer");
+
+require("dotenv").config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const REDIS_PORT = process.env.REDIS_PORT;
+const MONGODB_PORT = process.env.MONGODB_PORT;
 
 app.use(cors());
 app.use(express.json());
@@ -13,20 +19,189 @@ app.get('/', (req, res) => {
   res.send('Backend is running!');
 });
 
-app.get('/cache-test', async (req, res) => {
-    try {
-      await redisClient.set('message', 'Hello from Redis!', {
-        EX: 60, // expires in 60 seconds
-      });
-  
-      const value = await redisClient.get('message');
-      res.send(value);
-    } catch (err) {
-      console.error('Redis error:', err);
-      res.status(500).send('Something went wrong');
-    }
+mongoose.connect(process.env.MONGODB_URL)
+  .then(() => {
+    console.log('✅ Connected to MongoDB');
+  })
+  .catch((error) => {
+    console.error('❌ MongoDB connection error:', error);
   });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+app.get('/cache-test', async (req, res) => {
+  try {
+    await redisClient.set('message', 'Hello from Redis!', {
+      EX: 60, // expires in 60 seconds
+    });
+
+    const value = await redisClient.get('message');
+    res.send(value);
+  } catch (err) {
+    console.error('Redis error:', err);
+    res.status(500).send('Something went wrong');
+  }
 });
+
+app.listen(REDIS_PORT, () => {
+  console.log(`Server is running on http://localhost:${REDIS_PORT}`);
+});
+
+app.listen(MONGODB_PORT, () => {
+  console.log(`Server is running on http://localhost:${MONGODB_PORT}`);
+});
+
+
+//image storage engine
+const storage = multer.diskStorage(
+  {
+    destination: './upload/images',
+    filename: (req, file, cb) => {
+      return cb(null, `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`)
+    }
+  }
+)
+
+const upload = multer({ storage: storage })
+//creating upload endpoint for images
+app.use('/images', express.static('upload/images'))
+app.post("/upload", upload.single('product'), (req, res) => {
+  res.json({
+    success: 1,
+    image_url: `http://localhost:${MONGODB_PORT}/images/${req.file.filename}`
+  })
+})
+
+const Product = mongoose.model("Product", {
+  name: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  stock: {
+    type: Number,
+    required: true,
+  },
+  category: {
+    type: String,
+    required: true,
+  },
+  images: {
+    type: String,
+    required: true,
+  },
+  rating: {
+    type: Number,
+    required: false,
+  },
+  shop_id: {
+    type: String,
+    required: true,
+  },
+  created_at: {
+    type: Date,
+    default: Date.now,
+  }
+})
+
+app.post('/addproduct', async (req, res) => {
+  const product = new Product({
+    name: req.body.name,
+    description: req.body.description,
+    price: req.body.price,
+    stock: req.body.stock,
+    category: req.body.category,
+    images: req.body.images,
+    rating: req.body.rating,
+    shop_id: req.body.shop_id,
+    created_at: req.body.created_at
+  })
+  console.log(product);
+  await product.save();
+  console.log("save");
+  res.json({
+    success: true,
+    name: req.body.name
+  })
+})
+
+app.post('/deleteproduct', async (req, res) => {
+  await Product.findOneAndDelete({ _id: req.body._id });
+  res.json({
+    success: true,
+    name: req.body.name
+  })
+})
+
+app.get('/get-allproducts', async (req, res) => {
+  let products = await Product.find({});
+  console.log("All products fetched.");
+  res.send(products);
+})
+
+//User
+const addressSchema = new mongoose.Schema({
+  address_id: String,
+  street: String,
+  city: String,
+  country: String,
+});
+
+const paymentMethodSchema = new mongoose.Schema({
+  method_id: String,
+  type: String,
+  details: String,
+});
+
+const userSchema = new mongoose.Schema({
+  username:
+  {
+    type: String,
+    required: true
+  },
+  password_hash:
+  {
+    type: String,
+    required: true
+  },
+  email:
+  {
+    type: String,
+    required: true, unique: true
+  },
+
+  address: [addressSchema], // Embedded array of address documents
+
+  rank: {
+    type: String, default: 'normal'
+  },
+
+  payment_methods: [paymentMethodSchema], // Embedded array of payment method documents
+
+  wishlist: [{ type: String }], // Array of product ID strings (or ObjectIds if you link to Products)
+
+  created_at: { type: Date, default: Date.now },
+  updated_at: { type: Date, default: Date.now },
+
+  first_name: {
+    type: String,
+    required: true
+  },
+  last_name: {
+    type: String,
+    required: true
+  },
+  phone_number: {
+    type: String,
+    required: true
+  },
+});
+
+const User = mongoose.model('User', userSchema);
+
+module.exports = User;
