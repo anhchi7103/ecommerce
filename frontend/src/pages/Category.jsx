@@ -1,5 +1,5 @@
 import React from 'react'
-import { MdOutlineKeyboardArrowDown } from 'react-icons/md'
+import { MdOutlineKeyboardArrowDown, MdSearch } from 'react-icons/md'
 import all_products from '../assets/all_products'
 import Item from '../components/Item'
 
@@ -12,7 +12,17 @@ const Category = ({category, banner}) => {
         </div>
         <div className='flexBetween my-8 mx-2'>
           <h5><span className='font-bold'>Showing 1-12</span> out of 36 products</h5>
-          <div className='flexBetween max-sm:p-4 gap-x-4 px-8 py-3 rounded-5x1 ring-1 ring-slate-900/15'>Sort by <MdOutlineKeyboardArrowDown /></div>
+          <form /*onSubmit={handleSearch}*/ className="flex h-14 w-1/3 rounded-xl border border-gray-300 overflow-hidden">
+              <input
+                type="text"
+                placeholder="Search for products/shops"
+                /*value={searchKeyword}
+                onChange={handleSearchInputChange}*/
+                className="flex-1 pl-5 outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400"
+                aria-label="Search"
+              />
+              <button type="submit" className="bold text-xl text-secondary px-4"> <MdSearch /> </button>
+            </form>
         </div>
         {/*container*/}
         <div className='grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6'>
