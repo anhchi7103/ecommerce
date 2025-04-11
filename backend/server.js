@@ -71,6 +71,10 @@ app.post("/upload", upload.single('product'), (req, res) => {
 })
 
 const Product = mongoose.model("Product", {
+  _id: {
+    type: Number,
+    required: true,
+  },
   name: {
     type: String,
     required: true,
@@ -110,7 +114,18 @@ const Product = mongoose.model("Product", {
 })
 
 app.post('/addproduct', async (req, res) => {
+  let products = await Product.find({});
+  let id; 
+  if (products.length > 0) {
+    let last_product_array = products.slice(-1);
+    let last_product = last_product_array[0];
+    id = Number(last_product._id) + 1;
+  }
+  else {
+    id = 1;
+  }
   const product = new Product({
+    _id: id,
     name: req.body.name,
     description: req.body.description,
     price: req.body.price,
@@ -131,7 +146,7 @@ app.post('/addproduct', async (req, res) => {
 })
 
 app.post('/deleteproduct', async (req, res) => {
-  await Product.findOneAndDelete({ _id: req.body._id });
+  await Product.findOneAndDelete({ id: req.body._id });
   res.json({
     success: true,
     name: req.body.name
@@ -162,7 +177,8 @@ const userSchema = new mongoose.Schema({
   username:
   {
     type: String,
-    required: true
+    required: true, 
+    unique: true
   },
   password_hash:
   {
@@ -172,7 +188,8 @@ const userSchema = new mongoose.Schema({
   email:
   {
     type: String,
-    required: true, unique: true
+    required: true, 
+    unique: true
   },
 
   address: [addressSchema], // Embedded array of address documents
@@ -203,5 +220,42 @@ const userSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model('User', userSchema);
-
 module.exports = User;
+
+const ShopSchema = new mongoose.Schema({
+  owner_id: {
+    type: String,
+    required: true,
+    ref: 'User' // assuming you're referencing a User model
+  },
+  shop_name: {
+    type: String,
+    required: true
+  },
+  description: {
+    type: String,
+    required: true
+  },
+  rating: {
+    type: Number,
+    default: 0
+  },
+  products: [
+    {
+      type: String, // or ObjectId if referencing Product model
+      ref: 'Product'
+    }
+  ],
+  created_at: {
+    type: Date,
+    default: Date.now
+  },
+  updated_at: {
+    type: Date,
+    default: Date.now
+  }
+});
+
+const Shop = mongoose.model('Shop', ShopSchema);
+module.exports = Shop;
+
