@@ -1,5 +1,5 @@
 import React from 'react'
-import { MdOutlineKeyboardArrowDown, MdSearch } from 'react-icons/md'
+import { MdSearch } from 'react-icons/md'
 import all_products from '../assets/all_products'
 import Item from '../components/Item'
 
