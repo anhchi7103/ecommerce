@@ -5,6 +5,7 @@ const redisClient = require('./model/dbConfig');
 const jwt = require("jsonwebtoken");
 const path = require("path");
 const multer = require("multer");
+const { error } = require("console");
 
 require("dotenv").config();
 
@@ -48,7 +49,6 @@ app.listen(REDIS_PORT, () => {
 app.listen(MONGODB_PORT, () => {
   console.log(`Server is running on http://localhost:${MONGODB_PORT}`);
 });
-
 
 //image storage engine
 const storage = multer.diskStorage(
@@ -259,3 +259,51 @@ const ShopSchema = new mongoose.Schema({
 const Shop = mongoose.model('Shop', ShopSchema);
 module.exports = Shop;
 
+
+// Creare=ing endpoint for registering the user
+app.post('/signup', async(req, res) => {
+  let check = await User.findOne({email: req.body.email});
+  if(check) {
+    return res.status(400).json({success: false, errors: "Existing user found with same email adress"});
+  }
+  let cart = {};
+  for (let i=0; i<300; i++) {
+    cart[i] = 0;
+  }
+  const user = new User({
+    username: req.body.username,
+    email: req.body.email,
+    password_hash: req.body.password_hash,
+    cartData: cart,
+  })
+  await user.save();
+
+  const data = {
+    user: {
+      id: user.id
+    }
+  }
+  const token = jwt.sign(data, 'secret_ecom')
+  res.json({success: true, token})
+})
+
+// Creating endpoint for user login
+app.post('/login', async (req, res) => {
+  let user = await User.findOne({email:req.body.email});
+  if (user) {
+    const passMatch = req.body.password_hash === user.password_hash;
+    if (passMatch) {
+      const data = {
+        user: {
+          id: user.id
+        }
+      }
+      const token = jwt.sign(data, 'secret_ecom');
+      res.json({success:true, token});
+    } else {
+      res.json({success:false, errors:"Wrong password"});
+    }
+  } else {
+    res.json({success:false, errors: "Wrong email adress"})
+  }
+})
