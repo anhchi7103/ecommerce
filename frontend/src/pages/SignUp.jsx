@@ -1,11 +1,12 @@
 import React from 'react'
+import { useState } from 'react';
 
 const SignUp = () => {
-  // const [formData, setFormData] = useState({
-  //   username:"",
-  //   password_hash:"",
-  //   email:""
-  // });
+  const [formData, setFormData] = useState({
+    username:"",
+    password_hash:"",
+    email:""
+  });
 
   const changeHandler = (e) => {
     setFormData({...formData, [e.target.name]:e.target.value});
