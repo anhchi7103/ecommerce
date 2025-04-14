@@ -8,11 +8,11 @@ const AddProduct = () => {
     const [productDetails, setProductDetails] = useState({
         name: "",
         images: "",
-        category: "women",
+        category: "Women",
         price: "",
         stock: "",
         description: "",
-        shop_id: ""
+        shop_id: "10"
     });
 
     const imageHandler = (e) => {
@@ -76,10 +76,10 @@ const AddProduct = () => {
             <div className="mb-3 flex items-center gap-x-4">
                 <h4>Shop:</h4>
                 <select value={productDetails.shop_id} onChange={changeHandler} name="shop_id" id="" className='bg-primary ring-1 ring-slate-900/20 medium-16 rounded-sm outline-none'>
-                    <option value="10">Anh Chi</option>
-                    <option value="11">Quynh Chi</option>
-                    <option value="12">Song Cat</option>
-                    <option value="13">Kieu Nhi</option>
+                    <option value="10">Shop 1</option>
+                    <option value="11">Shop 2</option>
+                    <option value="12">Shop 3</option>
+                    <option value="13">Shop 4</option>
                 </select>
             </div>
             <div className="mb-3 flex items-center gap-x-4">
@@ -96,7 +96,7 @@ const AddProduct = () => {
                 </label>
                 <input onChange={imageHandler} type="file" name="images" id="file-input" hidden className="bg-primary max-w-80 w-full py-3 px-4" />
             </div>
-            <button onClick={() => Add_Product()} className='btn_dark_rounded mt-4 flexCenter gap-x-1'><MdAdd />Add product</button>
+            <button onClick={(e) => { e.preventDefault(); Add_Product();} } className='btn_dark_rounded mt-4 flexCenter gap-x-1'><MdAdd />Add product</button>
         </div>
     )
 }
