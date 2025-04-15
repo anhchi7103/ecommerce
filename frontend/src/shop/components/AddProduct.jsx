@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import upload_area from "../../assets/upload_area.svg"
-import Sidebar from './Sidebar'
 import { MdAdd } from "react-icons/md"
 
 const AddProduct = () => {
@@ -50,7 +49,22 @@ const AddProduct = () => {
                 },
                 body: JSON.stringify(product),
             }).then((resp) => resp.json()).then((data) => {
-                data.success ? alert("Product Added") : alert("Upload Failed")
+                if (data.success) {
+                    alert("Product Added");
+                    // Reset form here
+                    setProductDetails({
+                        name: "",
+                        images: "",
+                        category: "Women",
+                        price: "",
+                        stock: "",
+                        description: "",
+                        shop_id: "10"
+                    });
+                    setImage(false);
+                } else {
+                    alert("Upload Failed");
+                }
             })
         }
     }

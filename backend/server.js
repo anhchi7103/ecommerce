@@ -146,11 +146,11 @@ app.post('/addproduct', async (req, res) => {
 })
 
 app.post('/deleteproduct', async (req, res) => {
-  await Product.findOneAndDelete({ id: req.body._id });
+  await Product.findOneAndDelete({ _id: req.body._id });
   res.json({
     success: true,
-    name: req.body.name
   })
+  console.log(req.body);
 })
 
 app.get('/get-allproducts', async (req, res) => {

@@ -18,7 +18,7 @@ const ListProduct = () => {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
-            body:JSON.stringify({id:id})
+            body:JSON.stringify({_id:id})
         })
         await fetchInfo();
     }
@@ -51,7 +51,7 @@ const ListProduct = () => {
                                 <td>{product.stock}</td>
                                 <td>{product.category}</td>
                                 <td>{product.shop_id}</td>
-                                <td><div className='bold-22 pl-6 sm:pl-14'><TbTrash onClick={() => remove_product(product.id)}/></div></td>
+                                <td><div className='bold-22 pl-6 sm:pl-14'><TbTrash onClick={() => remove_product(product._id)}/></div></td>
                             </tr>
                         ))}
                     </tbody>

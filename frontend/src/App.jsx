@@ -52,9 +52,7 @@ export default function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/mens" element={<Category category="men" banner={bannermen} />} />
-          <Route path="/womens" element={<Category category="women" banner={bannerwomen} />} />
-          <Route path="/kids" element={<Category category="kid" banner={bannerkid} />} />
+          <Route path="/products" element={<Category banner={bannermen} />} />
           <Route path="/product/:productId" element={<Product />} />
           <Route path="/cart-page" element={<Cart />} />
           <Route path="/signup" element={<SignUp />} />
