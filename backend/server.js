@@ -10,8 +10,11 @@ const { error } = require("console");
 require("dotenv").config();
 
 const app = express();
-const REDIS_PORT = process.env.REDIS_PORT;
-const MONGODB_PORT = process.env.MONGODB_PORT;
+const PORT = process.env.PORT;
+
+const Product = require("./model/product");
+const User = require("./model/user");
+const Shop = require("./model/shop");
 
 app.use(cors());
 app.use(express.json());
@@ -42,12 +45,8 @@ app.get('/cache-test', async (req, res) => {
   }
 });
 
-app.listen(REDIS_PORT, () => {
-  console.log(`Server is running on http://localhost:${REDIS_PORT}`);
-});
-
-app.listen(MONGODB_PORT, () => {
-  console.log(`Server is running on http://localhost:${MONGODB_PORT}`);
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
 
 //image storage engine
@@ -68,49 +67,6 @@ app.post("/upload", upload.single('product'), (req, res) => {
     success: 1,
     image_url: `http://localhost:${MONGODB_PORT}/images/${req.file.filename}`
   })
-})
-
-const Product = mongoose.model("Product", {
-  _id: {
-    type: Number,
-    required: true,
-  },
-  name: {
-    type: String,
-    required: true,
-  },
-  description: {
-    type: String,
-    required: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
-  stock: {
-    type: Number,
-    required: true,
-  },
-  category: {
-    type: String,
-    required: true,
-  },
-  images: {
-    type: String,
-    required: true,
-  },
-  rating: {
-    type: Number,
-    required: false,
-  },
-  shop_id: {
-    type: String,
-    required: true,
-  },
-  created_at: {
-    type: Date,
-    default: Date.now,
-  }
 })
 
 app.post('/addproduct', async (req, res) => {
@@ -159,108 +115,7 @@ app.get('/get-allproducts', async (req, res) => {
   res.send(products);
 })
 
-//User
-const addressSchema = new mongoose.Schema({
-  address_id: String,
-  street: String,
-  city: String,
-  country: String,
-});
-
-const paymentMethodSchema = new mongoose.Schema({
-  method_id: String,
-  type: String,
-  details: String,
-});
-
-const userSchema = new mongoose.Schema({
-  username:
-  {
-    type: String,
-    required: true, 
-    unique: true
-  },
-  password_hash:
-  {
-    type: String,
-    required: true
-  },
-  email:
-  {
-    type: String,
-    required: true, 
-    unique: true
-  },
-
-  address: [addressSchema], // Embedded array of address documents
-
-  rank: {
-    type: String, default: 'normal'
-  },
-
-  payment_methods: [paymentMethodSchema], // Embedded array of payment method documents
-
-  wishlist: [{ type: String }], // Array of product ID strings (or ObjectIds if you link to Products)
-
-  created_at: { type: Date, default: Date.now },
-  updated_at: { type: Date, default: Date.now },
-
-  first_name: {
-    type: String,
-    required: true
-  },
-  last_name: {
-    type: String,
-    required: true
-  },
-  phone_number: {
-    type: String,
-    required: true
-  },
-});
-
-const User = mongoose.model('User', userSchema);
-module.exports = User;
-
-const ShopSchema = new mongoose.Schema({
-  owner_id: {
-    type: String,
-    required: true,
-    ref: 'User' // assuming you're referencing a User model
-  },
-  shop_name: {
-    type: String,
-    required: true
-  },
-  description: {
-    type: String,
-    required: true
-  },
-  rating: {
-    type: Number,
-    default: 0
-  },
-  products: [
-    {
-      type: String, // or ObjectId if referencing Product model
-      ref: 'Product'
-    }
-  ],
-  created_at: {
-    type: Date,
-    default: Date.now
-  },
-  updated_at: {
-    type: Date,
-    default: Date.now
-  }
-});
-
-const Shop = mongoose.model('Shop', ShopSchema);
-module.exports = Shop;
-
-
-// Creare=ing endpoint for registering the user
+// Creating endpoint for registering the user
 app.post('/signup', async(req, res) => {
   let check = await User.findOne({email: req.body.email});
   if(check) {
@@ -304,3 +159,6 @@ app.post('/login', async (req, res) => {
     res.json({success:false, errors: "Wrong email adress"})
   }
 })
+
+//cart
+app.use("/cart", require("./routes/cartRoute"));

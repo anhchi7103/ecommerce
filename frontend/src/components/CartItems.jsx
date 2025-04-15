@@ -24,21 +24,21 @@ const CartItems = () => {
                     {Object.values(cartItems).map((item) => {
                         if (item.quantity > 0) {
                             return (
-                                <tr key={item.id} className='border-b border-slate-900/20 p-6 medium-14 text-center'>
+                                <tr key={item._id} className='border-b border-slate-900/20 p-6 medium-14 text-center'>
                                     <td className='flexCenter'>
-                                        <img src={item.image} alt="prdctImg" height={43} width={43} className='rounded-lg ring-1 ring-slate-900/5 my-1' />
+                                        <img src={item.images} alt="prdctImg" height={43} width={43} className='rounded-lg ring-1 ring-slate-900/5 my-1' />
                                     </td>
                                     <td>
                                         <div className='line-clamp-3'>{item.name}</div>
                                     </td>
                                     <td>
-                                        {item.new_price}
+                                        {item.price}
                                     </td>
                                     <td className='w-16 h-16'>{item.quantity}</td>
-                                    <td>{(item.new_price * item.quantity)}</td>
+                                    <td>{(item.price * item.quantity)}</td>
                                     <td>
                                         <div className='bold-22 pl-14'>
-                                            <TbTrash onClick={() => removeFromCart(item.id)} />
+                                            <TbTrash onClick={() => removeFromCart(item._id)} />
                                         </div>
                                     </td>
                                 </tr>
