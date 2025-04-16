@@ -27,7 +27,7 @@ router.post("/add", async (req, res) => {
     await redisClient.hSet(`cart:${userId}`, `product_${product._id}`, JSON.stringify(item));
 
     // Optional: reset expiry every time they add something
-    await redisClient.expire(`cart:${userId}`, 60 * 60 * 24); // 24h
+     await redisClient.expire(`cart:${userId}`, 60 * 60 * 24); // 24h
 
     res.status(200).json({ message: "Added to cart" });
 
