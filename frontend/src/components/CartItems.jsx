@@ -6,6 +6,19 @@ import { TbTrash } from 'react-icons/tb';
 const CartItems = () => {
     const { cartItems, all_products, removeFromCart, getTotalCartAmount } = useContext(ShopContext);
 
+    const mergedCartItems = Object.values(cartItems).map((cartItem) => {
+        const product = all_products.find(p => String(p._id) === cartItem.productId);
+        if (!product) return null;
+        return {
+            ...product,
+            quantity: cartItem.quantity
+        };
+    }).filter(Boolean); // remove nulls if product not found
+
+    const totalAmount = mergedCartItems.reduce((total, item) => {
+        return total + item.price * item.quantity;
+    }, 0);
+
     return (
         <section className='max_padd_container pt-28'>
             <table className='w-full mx-auto'>
@@ -21,46 +34,37 @@ const CartItems = () => {
                 </thead>
                 {/* cart */}
                 <tbody>
-                    {Object.values(cartItems).map((item) => {
-                        if (item.quantity > 0) {
-                            return (
-                                <tr key={item._id} className='border-b border-slate-900/20 p-6 medium-14 text-center'>
-                                    <td className='flexCenter'>
-                                        <img src={item.images} alt="prdctImg" height={43} width={43} className='rounded-lg ring-1 ring-slate-900/5 my-1' />
-                                    </td>
-                                    <td>
-                                        <div className='line-clamp-3'>{item.name}</div>
-                                    </td>
-                                    <td>
-                                        {item.price}
-                                    </td>
-                                    <td className='w-16 h-16'>{item.quantity}</td>
-                                    <td>{(item.price * item.quantity)}</td>
-                                    <td>
-                                        <div className='bold-22 pl-14'>
-                                            <TbTrash onClick={() => removeFromCart(item._id)} />
-                                        </div>
-                                    </td>
-                                </tr>
-                            );
-                        }
-                    })}
-
+                    {mergedCartItems.map((item) => (
+                        <tr key={item._id} className='border-b border-slate-900/20 p-6 medium-14 text-center'>
+                            <td className='flexCenter'>
+                                <img src={item.images} alt="prdctImg" height={43} width={43} className='rounded-lg ring-1 ring-slate-900/5 my-1' />
+                            </td>
+                            <td><div className='line-clamp-3'>{item.name}</div></td>
+                            <td>{item.price}</td>
+                            <td className='w-16 h-16'>{item.quantity}</td>
+                            <td>{item.price * item.quantity}</td>
+                            <td>
+                                <div className='bold-22 pl-14'>
+                                    <TbTrash onClick={() => removeFromCart(item._id)} />
+                                </div>
+                            </td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
             {/* receipt */}
             <div className='flexCenter'>
-                <div className='flexCenter flex-col gap-20 my-16 p-8 md:flex-row rounded-md bg-white w-full max-w-[800px]'>
+                <div className='flexCenter flex-col gap-20 my-16 p-8 md:flex-row rounded-md bg-white w-full max-w-[500px]'>
                     <div className='flex flex-col gap-10'>
                         <h4 className='bold-20'>Receipt</h4>
                         <div className='flex-row w-60'>
                             <div className='flexBetween py-4'>
-                                <h4 className='medium-16'>Total:</h4>
-                                <h4 className='text-gray-30 font-semibold'>{getTotalCartAmount()}</h4>
+                                <h4 className='medium-16'>Subtotal:</h4>
+                                <h4 className='text-gray-30 font-semibold'>{totalAmount}</h4>
                             </div>
                             <hr />
                             <div className='flexBetween py-4'>
-                                <h4 className='medium-16'>Phí vận chuyển:</h4>
+                                <h4 className='medium-16'>Shipping Fee:</h4>
                                 <h4 className='text-gray-30 font-semibold'>Free</h4>
                             </div>
                             <hr />
@@ -73,7 +77,7 @@ const CartItems = () => {
                             </div>
                             <hr />
                             <div className='flexBetween py-4'>
-                                <h4 className='bold-18'>Tổng tiền: </h4>
+                                <h4 className='bold-18'>Total: </h4>
                                 <h4 className='bold-18'>{/*total.toLocaleString("vi-VN", {
                                     style: "currency",
                                     currency: "VND",
@@ -81,13 +85,6 @@ const CartItems = () => {
                             </div>
                         </div>
                         <button /*onClick={handleCheckout}*/ className='btn_dark_rounded w-44'>Thanh toán</button>
-                    </div>
-                    <div className='flex flex-col gap-10'>
-                        <h4 className='bold-20'>Discount code: </h4>
-                        <div className='flexBetween pl-5 h-12 bg-primary rounded-full ring-1 ring-slate-900/10'>
-                            <input type="text" placeholder='Code' className='bg-transparent border-none outline-none' /*value={cardID} onChange={(e) => setCard(e.target.value)} *//>
-                            <button /*onClick={handleCheckCard}*/ className='btn_dark_rounded' >Kiểm tra hợp lệ</button>
-                        </div>
                     </div>
                 </div>
             </div>
