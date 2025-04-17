@@ -14,6 +14,7 @@ const ShopContextProvider = (props) => {
 
     const [cartItems, setCartItems] = useState({});
     const [all_products, setAll_products] = useState([]);
+    const [triggerRender, setTriggerRender] = useState(false);
 
     //fetch products
     useEffect(() => {
@@ -47,32 +48,53 @@ const ShopContextProvider = (props) => {
         fetchCart();
     }, []);
 
-
     const addToCart = async (product, quantity = 1) => {
-        const userId = "67fbdc2a945d615f6ff71505"; // Replace with the actual logged-in user's ID or token-based ID
+        const userId = "67fbdc2a945d615f6ff71505";
 
-        await fetch("http://localhost:4000/cart/add", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                userId,
-                productId: product._id,
-                quantity
-            })
-        });
+        try {
+            const res = await fetch("http://localhost:4000/cart/add", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    userId,
+                    productId: product._id,
+                    quantity
+                })
+            });
 
-        // Update local state only if needed
-        setCartItems((prev) => ({
-            ...prev,
-            [product._id]: {
-                ...product,
-                quantity: (prev[product._id]?.quantity || 0) + quantity,
-            },
-        }));
+            if (!res.ok) {
+                console.error("Failed to add to cart");
+                return;
+            }
+
+            const data = await res.json();
+            const updatedItem = data.updated;
+
+            // setCartItems((prev) => {
+            //     const updatedCart = { ...prev };
+            //     const fullProduct = all_products.find(p => p._id === updatedItem.productId) || product;
+    
+            //     updatedCart[updatedItem.productId] = {
+            //         ...fullProduct,
+            //         quantity: updatedItem.quantity,
+            //     };
+    
+            //     return updatedCart;
+            // });
+
+            setCartItems((prev) => ({
+                ...prev,
+                [updatedItem.productId]: {
+                    ...updatedItem
+                }
+            }));
+
+        } catch (err) {
+            console.error("Error adding to cart:", err);
+        }
     };
-
 
     const removeFromCart = async (itemId) => {
         const userId = "67fbdc2a945d615f6ff71505"; // replace with dynamic user later
@@ -111,6 +133,8 @@ const ShopContextProvider = (props) => {
                 return updatedCart;
             });
 
+            setTriggerRender(prev => !prev); 
+
         } catch (err) {
             console.error("Error updating cart:", err);
         }
@@ -137,7 +161,7 @@ const ShopContextProvider = (props) => {
         return totalItem;
     };
 
-    const contextValue = { all_products, cartItems, addToCart, removeFromCart, getTotalCartAmount, getTotalCartItems };
+    const contextValue = { all_products, cartItems, addToCart, removeFromCart, getTotalCartAmount, getTotalCartItems, triggerRender, setTriggerRender };
 
     return (
         <ShopContext.Provider value={contextValue}>

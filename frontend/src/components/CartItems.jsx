@@ -1,10 +1,10 @@
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { ShopContext } from '../Context/ShopContext';
 import { TbTrash } from 'react-icons/tb';
 
 
 const CartItems = () => {
-    const { cartItems, all_products, removeFromCart, getTotalCartAmount } = useContext(ShopContext);
+    const { cartItems, all_products, removeFromCart, triggerRender } = useContext(ShopContext);
 
     const mergedCartItems = Object.values(cartItems).map((cartItem) => {
         const product = all_products.find(p => String(p._id) === cartItem.productId);
@@ -18,6 +18,10 @@ const CartItems = () => {
     const totalAmount = mergedCartItems.reduce((total, item) => {
         return total + item.price * item.quantity;
     }, 0);
+
+    useEffect(() => {
+        console.log("CartItems re-rendered"); // Check if the component re-renders when triggerRender is changed
+    }, [triggerRender]); 
 
     return (
         <section className='max_padd_container pt-28'>
