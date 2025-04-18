@@ -27,6 +27,17 @@ const ShopContextProvider = (props) => {
                 quantity: (prev[product.id]?.quantity || 0) + quantity,
             },
         }));
+        // if (localStorage.getItem('auth-token')) {
+        //     fetch("http://localhost:4000/addtocart", {
+        //         method: "POST",
+        //         headers: {
+        //             Accept: 'application/form-data',
+        //             'auth-token': `${localStorage.getItem('auth-token')}`,
+        //             'Conten-Type': 'application/json',
+        //         },
+        //         body:JSON.stringify({id: product.id}),
+        //     }).then((respone)=>respone.json()).then((data)=>console.log(data));
+        // }
     };
 
     const removeFromCart = (itemId) => {

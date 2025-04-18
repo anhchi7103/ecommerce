@@ -116,28 +116,54 @@ app.get('/get-allproducts', async (req, res) => {
 })
 
 // Creating endpoint for registering the user
-app.post('/signup', async(req, res) => {
-  let check = await User.findOne({email: req.body.email});
-  if(check) {
-    return res.status(400).json({success: false, errors: "Existing user found with same email adress"});
-  }
-  
-  const user = new User({
-    username: req.body.username,
-    email: req.body.email,
-    password_hash: req.body.password_hash,
-    
-  })
-  await user.save();
+app.post('/signup', async (req, res) => {
+  try {
+    const { email, username, first_name, last_name, phone_number, password_hash } = req.body;
 
-  const data = {
-    user: {
-      id: user._id
+    // Basic validation
+    if (!email || !username || !password_hash || !first_name || !last_name || !phone_number) {
+      return res.status(400).json({ success: false, errors: "All fields are required" });
     }
+
+    let check = await User.findOne({ email });
+    if (check) {
+      return res.status(400).json({ success: false, errors: "Existing user found with same email address" });
+    }
+
+    // Khởi tạo giỏ hàng 300 sản phẩm với số lượng = 0
+    // let cart = {};
+    // for (let i = 0; i < 300; i++) {
+    //   cart[i] = 0;
+    // }
+
+    const user = new User({
+      username,
+      email,
+      password_hash,
+      first_name,
+      last_name,
+      phone_number,
+      // cart_data: cart,
+      address: req.body.address || [],
+      payment_methods: req.body.payment_methods || [],
+      wishlist: req.body.wishlist || [],
+      rank: req.body.rank || 'regular'
+    });
+
+    await user.save();
+
+    const data = { 
+      user: { 
+        id: user._id 
+      }};
+    const token = jwt.sign(data, 'secret_ecom');
+    res.status(201).json({ success: true, token });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: "Internal server error" });
   }
-  const token = jwt.sign(data, 'secret_ecom')
-  res.json({success: true, token})
-})
+});
 
 // Creating endpoint for user login
 app.post('/login', async (req, res) => {
@@ -162,3 +188,23 @@ app.post('/login', async (req, res) => {
 
 //cart
 app.use("/cart", require("./routes/cartRoute"));
+
+// Creating middlewear to fetch user
+// const fetchUser = async (req, res, next) => {
+//   const token = req.header('auth-token');
+//   if (!token) {
+//     res.status(401).send({errors: "Please authenticate using valid login"})
+//   } else {
+//     try {
+//       const data = jwt.verify(token, 'secret_ecom');
+//       req.user = data.user;
+//       next();
+//     } catch (error) {
+//       res.status(401).send({errors: "Please authenticate using a valid token"})
+//     }
+//   }
+// }
+
+// app.post('/addtocart', fetchUser, async (req, res) => {
+//   console.log(req.body, req.user);
+// })
