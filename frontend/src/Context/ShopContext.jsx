@@ -75,12 +75,12 @@ const ShopContextProvider = (props) => {
             // setCartItems((prev) => {
             //     const updatedCart = { ...prev };
             //     const fullProduct = all_products.find(p => p._id === updatedItem.productId) || product;
-    
+
             //     updatedCart[updatedItem.productId] = {
             //         ...fullProduct,
             //         quantity: updatedItem.quantity,
             //     };
-    
+
             //     return updatedCart;
             // });
 
@@ -113,17 +113,28 @@ const ShopContextProvider = (props) => {
                 return;
             }
 
+            // const data = await res.json();
+            // const { productId, quantity } = data.updated;
             const data = await res.json();
+
+            if (!data.updated) {
+                // Assume product was removed entirely
+                setCartItems((prevCart) => {
+                    const updatedCart = { ...prevCart };
+                    delete updatedCart[itemId];
+                    return updatedCart;
+                });
+                return;
+            }
+
             const { productId, quantity } = data.updated;
 
             setCartItems((prevCart) => {
                 const updatedCart = { ...prevCart };
 
                 if (quantity <= 0) {
-                    // Remove item if quantity is 0
                     delete updatedCart[productId];
                 } else {
-                    // Update quantity
                     updatedCart[productId] = {
                         ...updatedCart[productId],
                         quantity,
@@ -133,7 +144,20 @@ const ShopContextProvider = (props) => {
                 return updatedCart;
             });
 
-            setTriggerRender(prev => !prev); 
+            // setCartItems((prevCart) => {
+            //     const { [productId]: _, ...rest } = prevCart; // this removes productId
+            //     if (quantity <= 0) {
+            //         return { ...rest }; // removed product entirely
+            //     } else {
+            //         return {
+            //             ...prevCart,
+            //             [productId]: {
+            //                 ...prevCart[productId],
+            //                 quantity,
+            //             },
+            //         };
+            //     }
+            // });
 
         } catch (err) {
             console.error("Error updating cart:", err);
