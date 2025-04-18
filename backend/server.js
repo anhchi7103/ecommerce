@@ -171,13 +171,10 @@ app.post('/login', async (req, res) => {
   if (user) {
     const passMatch = req.body.password_hash === user.password_hash;
     if (passMatch) {
-      const data = {
-        user: {
-          id: user._id
-        }
-      }
-      const token = jwt.sign(data, 'secret_ecom');
-      res.json({success:true, token});
+      return res.json({
+        success: true,
+        userId: user._id
+      });
     } else {
       res.json({success:false, errors:"Wrong password"});
     }

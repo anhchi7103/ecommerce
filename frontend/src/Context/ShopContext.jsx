@@ -23,7 +23,14 @@ const ShopContextProvider = (props) => {
 
     //fetch cart items
     useEffect(() => {
-        const userId = '67fbdc2a945d615f6ff71505'; // static user for now
+        // const userId = '67fbdc2a945d615f6ff71505'; // static user for now
+
+        const userId = localStorage.getItem("UserID"); // get userId dynamically
+
+        if (!userId) {
+            console.error("No userId found in localStorage");
+            return;
+        }
 
         const fetchCart = async () => {
             try {
@@ -49,8 +56,12 @@ const ShopContextProvider = (props) => {
     }, []);
 
     const addToCart = async (product, quantity = 1) => {
-        const userId = "67fbdc2a945d615f6ff71505";
+        const userId = localStorage.getItem("UserID"); // get userId dynamically
 
+        if (!userId) {
+            console.error("No userId found in localStorage");
+            return;
+        }
         try {
             const res = await fetch("http://localhost:4000/cart/add", {
                 method: "POST",
@@ -97,8 +108,13 @@ const ShopContextProvider = (props) => {
     };
 
     const removeFromCart = async (itemId) => {
-        const userId = "67fbdc2a945d615f6ff71505"; // replace with dynamic user later
+        const userId = localStorage.getItem("UserID"); // get userId dynamically
 
+        if (!userId) {
+            console.error("No userId found in localStorage");
+            return;
+        }
+        
         try {
             const res = await fetch("http://localhost:4000/cart/delete", {
                 method: "POST",

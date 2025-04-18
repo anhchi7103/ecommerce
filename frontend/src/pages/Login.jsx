@@ -24,7 +24,7 @@ const Login = () => {
     }).then((response) => response.json()).then((data) => responseData=data)
 
     if (responseData.success) {
-      localStorage.setItem('auth-token', responseData.token);
+      localStorage.setItem('UserID', responseData.userId);
       alert('Login successfully!');
       window.location.replace('/');
     }
