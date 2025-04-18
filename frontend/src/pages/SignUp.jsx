@@ -64,8 +64,9 @@ const SignUp = () => {
     .then((data) => responseData = data);
 
     if (responseData.success) {
-      localStorage.setItem('auth-token', responseData.token);
-      window.location.replace('/');
+      //localStorage.setItem('auth-token', responseData.token);
+      window.location.replace('/login');
+      alert("Register new account successfully!");
     } else {
       alert(responseData.errors);
     }

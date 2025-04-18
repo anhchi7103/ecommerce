@@ -152,12 +152,12 @@ app.post('/signup', async (req, res) => {
 
     await user.save();
 
-    const data = { 
-      user: { 
-        id: user._id 
-      }};
-    const token = jwt.sign(data, 'secret_ecom');
-    res.status(201).json({ success: true, token });
+    // const data = { 
+    //   user: { 
+    //     id: user._id 
+    //   }};
+    // const token = jwt.sign(data, 'secret_ecom');
+    res.status(201).json({ success: true });
 
   } catch (err) {
     console.error(err);
