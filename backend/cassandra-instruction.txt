@@ -1,0 +1,12 @@
+1. Chạy lệnh này để dừng cassandra đang chạy trên docker
+docker stop cassandra
+
+2. Chạy này để remove container
+docker rm cassandra
+
+3. Chạy lệnh này để expose port để sử dụng localhost thay vì network của docker
+docker run --name cassandra -p 9042:9042 -d cassandra
+
+4. Khởi động BE bình thường
+
+LƯU Ý: LÀM ĐỦ CÁC BƯỚC.

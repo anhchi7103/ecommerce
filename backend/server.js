@@ -1,11 +1,13 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const redisClient = require('./model/dbConfig');
 const jwt = require("jsonwebtoken");
 const path = require("path");
 const multer = require("multer");
 const { error } = require("console");
+
+const redisClient = require('./middleware/dbConfig');
+const { connectCassandra } = require('./middleware/cassandra');
 
 require("dotenv").config();
 
@@ -22,6 +24,8 @@ app.use(express.json());
 app.get('/', (req, res) => {
   res.send('Backend is running!');
 });
+
+connectCassandra();
 
 mongoose.connect(process.env.MONGODB_URL)
   .then(() => {

@@ -2,7 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const Product = require("../model/product");
-const redisClient = require("../model/dbConfig");
+const redisClient = require("../middleware/dbConfig");
 
 // POST /cart/add
 router.post("/add", async (req, res) => {
