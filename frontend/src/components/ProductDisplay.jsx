@@ -32,7 +32,7 @@ const ProductDisplay = (props) => {
           </div>
 
           <div>
-            <img src={product.image} alt="" />
+            <img src={product.images} alt="" />
           </div>
         </div>
         {/* right side */}
@@ -46,8 +46,7 @@ const ProductDisplay = (props) => {
             <p>(111)</p>
           </div>
           <div className='flex gap-x-6 medium-20 my-4'>
-            <div className='line-through'>{product.old_price}</div>
-            <div className='text-secondary'>{product.new_price}</div>
+            <div className='text-secondary'>{product.price}</div>
           </div>
           <div className='mb-4'>
             <h4 className='bold-16'>Quantity</h4>
@@ -67,8 +66,6 @@ const ProductDisplay = (props) => {
               </div>
               <button className='btn_dark_rounded !rounded-none uppercase reguar-14 tracking-widest'>Buy now</button>
             </div>
-            <p><span className='medium-16 text-tertiary'>Category: </span> Women | Jacket | Winter</p>
-            <p><span className='medium-16 text-tertiary'>Tags: </span> Modern | Latest </p>
           </div>
         </div>
       </div>

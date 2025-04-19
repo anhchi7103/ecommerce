@@ -9,7 +9,7 @@ import ProductSuggestion from '../components/ProductSuggestion';
 const Product = () => {
   const {all_products} = useContext(ShopContext);
   const {productId} = useParams();
-  const product = all_products.find((e) => e.id === Number(productId));
+  const product = all_products.find((e) => e._id === Number(productId));
   if (!product){
     return <div>  Product not found! </div>
   }

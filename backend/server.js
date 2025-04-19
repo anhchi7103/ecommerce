@@ -1,18 +1,29 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const redisClient = require('./model/dbConfig');
 const jwt = require("jsonwebtoken");
 const path = require("path");
 const multer = require("multer");
 const { error } = require("console");
 const neo4j = require ('neo4j-driver')
 
+const redisClient = require('./middleware/dbConfig');
+const { connectCassandra } = require('./middleware/cassandra');
+
 require("dotenv").config();
 
 const app = express();
-const REDIS_PORT = process.env.REDIS_PORT;
-const MONGODB_PORT = process.env.MONGODB_PORT;
+const PORT = process.env.PORT;
+
+const Product = require("./model/product");
+const User = require("./model/user");
+const Shop = require("./model/shop");
+
+app.use(cors());
+app.use(express.json());
+
+//QChi
+const order = require("./routes/orderRoute");
 const NEO4J_URI = process.env.NEO4J_URI;
 const NEO4J_USER = process.env.NEO4J_USERNAME;
 const NEO4J_PASSWORD = process.env.NEO4J_PASSWORD;
@@ -20,9 +31,14 @@ const NEO4J_PASSWORD = process.env.NEO4J_PASSWORD;
 app.use(cors());
 app.use(express.json());
 
+//QChi
+app.use("/api/orders", order);
+
 app.get('/', (req, res) => {
   res.send('Backend is running!');
 });
+
+connectCassandra();
 
 mongoose.connect(process.env.MONGODB_URL)
   .then(() => {
@@ -70,51 +86,8 @@ app.use('/images', express.static('upload/images'))
 app.post("/upload", upload.single('product'), (req, res) => {
   res.json({
     success: 1,
-    image_url: `http://localhost:${MONGODB_PORT}/images/${req.file.filename}`
+    image_url: `http://localhost:${PORT}/images/${req.file.filename}`
   })
-})
-
-const Product = mongoose.model("Product", {
-  _id: {
-    type: Number,
-    required: true,
-  },
-  name: {
-    type: String,
-    required: true,
-  },
-  description: {
-    type: String,
-    required: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
-  stock: {
-    type: Number,
-    required: true,
-  },
-  category: {
-    type: String,
-    required: true,
-  },
-  images: {
-    type: String,
-    required: true,
-  },
-  rating: {
-    type: Number,
-    required: false,
-  },
-  shop_id: {
-    type: String,
-    required: true,
-  },
-  created_at: {
-    type: Date,
-    default: Date.now,
-  }
 })
 
 app.post('/addproduct', async (req, res) => {
@@ -150,11 +123,11 @@ app.post('/addproduct', async (req, res) => {
 })
 
 app.post('/deleteproduct', async (req, res) => {
-  await Product.findOneAndDelete({ id: req.body._id });
+  await Product.findOneAndDelete({ _id: req.body._id });
   res.json({
     success: true,
-    name: req.body.name
   })
+  console.log(req.body);
 })
 
 app.get('/get-allproducts', async (req, res) => {
@@ -163,130 +136,55 @@ app.get('/get-allproducts', async (req, res) => {
   res.send(products);
 })
 
-//User
-const addressSchema = new mongoose.Schema({
-  address_id: String,
-  street: String,
-  city: String,
-  country: String,
-});
+// Creating endpoint for registering the user
+app.post('/signup', async (req, res) => {
+  try {
+    const { email, username, first_name, last_name, phone_number, password_hash } = req.body;
 
-const paymentMethodSchema = new mongoose.Schema({
-  method_id: String,
-  type: String,
-  details: String,
-});
-
-const userSchema = new mongoose.Schema({
-  username:
-  {
-    type: String,
-    required: true, 
-    unique: true
-  },
-  password_hash:
-  {
-    type: String,
-    required: true
-  },
-  email:
-  {
-    type: String,
-    required: true, 
-    unique: true
-  },
-
-  address: [addressSchema], // Embedded array of address documents
-
-  rank: {
-    type: String, default: 'normal'
-  },
-
-  payment_methods: [paymentMethodSchema], // Embedded array of payment method documents
-
-  wishlist: [{ type: String }], // Array of product ID strings (or ObjectIds if you link to Products)
-
-  created_at: { type: Date, default: Date.now },
-  updated_at: { type: Date, default: Date.now },
-
-  first_name: {
-    type: String,
-    required: true
-  },
-  last_name: {
-    type: String,
-    required: true
-  },
-  phone_number: {
-    type: String,
-    required: true
-  },
-});
-
-const User = mongoose.model('User', userSchema);
-module.exports = User;
-
-const ShopSchema = new mongoose.Schema({
-  owner_id: {
-    type: String,
-    required: true,
-    ref: 'User' // assuming you're referencing a User model
-  },
-  shop_name: {
-    type: String,
-    required: true
-  },
-  description: {
-    type: String,
-    required: true
-  },
-  rating: {
-    type: Number,
-    default: 0
-  },
-  products: [
-    {
-      type: String, // or ObjectId if referencing Product model
-      ref: 'Product'
+    // Basic validation
+    if (!email || !username || !password_hash || !first_name || !last_name || !phone_number) {
+      return res.status(400).json({ success: false, errors: "All fields are required" });
     }
-  ],
-  created_at: {
-    type: Date,
-    default: Date.now
-  },
-  updated_at: {
-    type: Date,
-    default: Date.now
+
+    let check = await User.findOne({ email });
+    if (check) {
+      return res.status(400).json({ success: false, errors: "Existing user found with same email address" });
+    }
+
+    // Khởi tạo giỏ hàng 300 sản phẩm với số lượng = 0
+    // let cart = {};
+    // for (let i = 0; i < 300; i++) {
+    //   cart[i] = 0;
+    // }
+
+    const user = new User({
+      username,
+      email,
+      password_hash,
+      first_name,
+      last_name,
+      phone_number,
+      // cart_data: cart,
+      address: req.body.address || [],
+      payment_methods: req.body.payment_methods || [],
+      wishlist: req.body.wishlist || [],
+      rank: req.body.rank || 'regular'
+    });
+
+    await user.save();
+
+    // const data = { 
+    //   user: { 
+    //     id: user._id 
+    //   }};
+    // const token = jwt.sign(data, 'secret_ecom');
+    res.status(201).json({ success: true });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: "Internal server error" });
   }
 });
-
-const Shop = mongoose.model('Shop', ShopSchema);
-module.exports = Shop;
-
-
-// Creare=ing endpoint for registering the user
-app.post('/signup', async(req, res) => {
-  let check = await User.findOne({email: req.body.email});
-  if(check) {
-    return res.status(400).json({success: false, errors: "Existing user found with same email adress"});
-  }
-  
-  const user = new User({
-    username: req.body.username,
-    email: req.body.email,
-    password_hash: req.body.password_hash,
-    
-  })
-  await user.save();
-
-  const data = {
-    user: {
-      id: user._id
-    }
-  }
-  const token = jwt.sign(data, 'secret_ecom')
-  res.json({success: true, token})
-})
 
 // Creating endpoint for user login
 app.post('/login', async (req, res) => {
@@ -294,13 +192,10 @@ app.post('/login', async (req, res) => {
   if (user) {
     const passMatch = req.body.password_hash === user.password_hash;
     if (passMatch) {
-      const data = {
-        user: {
-          id: user._id
-        }
-      }
-      const token = jwt.sign(data, 'secret_ecom');
-      res.json({success:true, token});
+      return res.json({
+        success: true,
+        userId: user._id
+      });
     } else {
       res.json({success:false, errors:"Wrong password"});
     }
@@ -325,3 +220,50 @@ async function testConnection() {
 }
 
 testConnection();
+
+//cart
+app.use("/cart", require("./routes/cartRoute"));
+
+//for shops
+app.get('/shop/:shopId', async (req, res) => {
+  const shopId = req.params.shopId;
+
+  try {
+    const products = await Product.find({ shop_id: shopId });
+    console.log(`Products for shop ${shopId} fetched.`);
+    res.json(products);
+  } catch (err) {
+    console.error("Error fetching products by shop:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get('/get-shop-by-user/:userId', async (req, res) => {
+  const { userId } = req.params;
+  const shop = await Shop.findOne({ owner_id: userId });
+  if (shop) {
+      res.json(shop);
+  } else {
+      res.status(404).json({ error: "Shop not found" });
+  }
+});
+
+// Creating middlewear to fetch user
+// const fetchUser = async (req, res, next) => {
+//   const token = req.header('auth-token');
+//   if (!token) {
+//     res.status(401).send({errors: "Please authenticate using valid login"})
+//   } else {
+//     try {
+//       const data = jwt.verify(token, 'secret_ecom');
+//       req.user = data.user;
+//       next();
+//     } catch (error) {
+//       res.status(401).send({errors: "Please authenticate using a valid token"})
+//     }
+//   }
+// }
+
+// app.post('/addtocart', fetchUser, async (req, res) => {
+//   console.log(req.body, req.user);
+// })

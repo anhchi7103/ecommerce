@@ -1,9 +1,11 @@
-import React from 'react'
+import React, {useContext, useState} from 'react'
 import { MdSearch } from 'react-icons/md'
-import all_products from '../assets/all_products'
 import Item from '../components/Item'
+import { ShopContext } from '../Context/ShopContext'
 
-const Category = ({category, banner}) => {
+const Category = ({banner}) => {
+  const {all_products} = useContext(ShopContext);
+
   return (
     <section className='max_padd_container py-12 xl:py-28'>
       <div>
@@ -27,9 +29,9 @@ const Category = ({category, banner}) => {
         {/*container*/}
         <div className='grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6'>
           {all_products.map((item) => {
-            if (category === item.category)
+            if (1)
             {
-              return <Item key={item.id} id={item.id} image={item.image} name={item.name} old_price={item.old_price} new_price={item.new_price}></Item>
+              return <Item key={item._id} _id={item._id} images={item.images} name={item.name} price={item.price} ></Item>
             }
           })}
         </div>

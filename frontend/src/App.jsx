@@ -1,4 +1,4 @@
-import Header from "./components/Header"
+﻿import Header from "./components/Header"
 import Footer from "./components/Footer"
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
 import Home from "./pages/Home"
@@ -12,6 +12,12 @@ import AddProduct from "./shop/components/AddProduct"
 import ListProduct from "./shop/components/ListProduct"
 import Navbar from "./shop/components/Navbar"
 import Sidebar from "./shop/components/Sidebar"
+
+//QChi
+import PropTypes from 'prop-types';
+import Checkout from "./pages/Checkout";
+import OrderList from "./pages/OrderList";
+import PurchaseHistory from "./pages/PurchaseHistory";
 
 //import images
 import bannermen from "./assets/bannermens.png"
@@ -44,6 +50,10 @@ const Layout = ({ children }) => {
   );
 };
 
+// QChi - Thêm validation cho prop children
+Layout.propTypes = {
+    children: PropTypes.node.isRequired,  // Kiểm tra nếu children là một phần tử hợp lệ
+};
 
 export default function App() {
   return (
@@ -52,13 +62,14 @@ export default function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/mens" element={<Category category="men" banner={bannermen} />} />
-          <Route path="/womens" element={<Category category="women" banner={bannerwomen} />} />
-          <Route path="/kids" element={<Category category="kid" banner={bannerkid} />} />
+          <Route path="/products" element={<Category banner={bannermen} />} />
           <Route path="/product/:productId" element={<Product />} />
           <Route path="/cart-page" element={<Cart />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/orderlist" element={<OrderList />} />
+          <Route path="/purchasehistory" element={<PurchaseHistory />} />
           {/* Admin/shop routes */}
           <Route path="/shop/home" element={<Admin />} />
           <Route path="/shop/addproduct" element={<AddProduct />} />

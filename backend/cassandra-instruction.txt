@@ -1,0 +1,28 @@
+0. Tải driver cassandra 
+npm install cassandra-driver
+
+1. Chạy lệnh này để dừng cassandra đang chạy trên docker
+docker stop cassandra
+
+2. Chạy này để remove container
+docker rm cassandra
+
+3. Chạy lệnh này để expose port để sử dụng localhost thay vì network của docker
+docker run --name cassandra -p 9042:9042 -d cassandra
+
+4. Chạy lệnh này để kiểm tra xem cassandra đã khởi động chưa (chỉ cần có cụm "Startup Complete" là được, 
+do bản chất câu này là đọc log nên message rất dài nhưng tìm đúng cụm trên tức là khởi động thành công)
+docker logs -f cassandra
+
+5. Khởi động BE bình thường
+
+LƯU Ý: LÀM ĐỦ CÁC BƯỚC. Những lệnh 1, 2, 3 chỉ chạy 1 lần duy nhất để khởi tạo connection, các lần
+sau chỉ cần start container trên docker xong start BE bình thường, cassandra mất tầm 1-2p để khởi động 
+nên nếu bị timeout thì cứ chạy câu 4 lại để check, xong thì chạy BE lại.
+
+
+//CQL Script - Tạo keyspace trên container cassandra
+CREATE KEYSPACE ecommerce WITH replication = {'class': 'SimpleStrategy','replication_factor': 1};
+
+//Install thêm để chạy được BE: 
+npm install uuid
