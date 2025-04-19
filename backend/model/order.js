@@ -1,5 +1,5 @@
 ﻿// backend/model/order.js
-const { cassandraClient } = require('./dbConfig');
+const { cassandraClient } = require('../middleware/dbConfig');
 const { v4: uuidv4 } = require('uuid');
 
 async function createOrder(data) {
