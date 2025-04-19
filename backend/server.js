@@ -21,6 +21,15 @@ const Shop = require("./model/shop");
 app.use(cors());
 app.use(express.json());
 
+//QChi
+const order = require("./routes/orderRoute");
+
+app.use(cors());
+app.use(express.json());
+
+//QChi
+app.use("/api/orders", order);
+
 app.get('/', (req, res) => {
   res.send('Backend is running!');
 });
