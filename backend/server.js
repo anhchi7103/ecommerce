@@ -6,12 +6,16 @@ const jwt = require("jsonwebtoken");
 const path = require("path");
 const multer = require("multer");
 const { error } = require("console");
+const neo4j = require ('neo4j-driver')
 
 require("dotenv").config();
 
 const app = express();
 const REDIS_PORT = process.env.REDIS_PORT;
 const MONGODB_PORT = process.env.MONGODB_PORT;
+const NEO4J_URI = process.env.NEO4J_URI;
+const NEO4J_USER = process.env.NEO4J_USERNAME;
+const NEO4J_PASSWORD = process.env.NEO4J_PASSWORD;
 
 app.use(cors());
 app.use(express.json());
@@ -42,9 +46,9 @@ app.get('/cache-test', async (req, res) => {
   }
 });
 
-app.listen(REDIS_PORT, () => {
-  console.log(`Server is running on http://localhost:${REDIS_PORT}`);
-});
+// app.listen(REDIS_PORT, () => {
+//   console.log(`Server is running on http://localhost:${REDIS_PORT}`);
+// });
 
 app.listen(MONGODB_PORT, () => {
   console.log(`Server is running on http://localhost:${MONGODB_PORT}`);
@@ -304,3 +308,20 @@ app.post('/login', async (req, res) => {
     res.json({success:false, errors: "Wrong email adress"})
   }
 })
+
+const driver = neo4j.driver(NEO4J_URI, neo4j.auth.basic(NEO4J_USER, NEO4J_PASSWORD));
+const session = driver.session();
+
+async function testConnection() {
+  try {
+    const result = await session.run('RETURN "✅ Connected to Aura (Neo4j)!" AS message');
+    console.log(result.records[0].get('message'));
+  } catch (error) {
+    console.error('Lỗi khi kết nối:', error);
+  } finally {
+    await session.close();
+    await driver.close();
+  }
+}
+
+testConnection();
