@@ -1,16 +1,36 @@
 import React, { useEffect, useState } from 'react'
-import {TbTrash} from 'react-icons/tb'
+import { TbTrash } from 'react-icons/tb'
 const ListProduct = () => {
     const [allProducts, setAllproducts] = useState([]);
-    
+
     const fetchInfo = async () => {
-        await fetch('http://localhost:4000/get-allproducts').then((res) => res.json()).then((data) => {setAllproducts(data)});
+        const userId = localStorage.getItem("UserID");
+
+        // optional: make sure you have a userId
+        if (!userId) {
+            console.error("No userId found in localStorage");
+            return;
+        }
+
+        try {
+            // First, fetch the shop info for this user
+            const shopRes = await fetch(`http://localhost:4000/get-shop-by-user/${userId}`);
+            const shopData = await shopRes.json();
+            const shopId = shopData._id;
+
+            // Then, fetch products belonging to that shop
+            const productRes = await fetch(`http://localhost:4000/shop/${shopId}`);
+            const productData = await productRes.json();
+            setAllproducts(productData);
+        } catch (err) {
+            console.error("Failed to fetch shop or products:", err);
+        }
     }
-    
+
     useEffect(() => {
         fetchInfo();
     }, [])
-    
+
     const remove_product = async (id) => {
         await fetch('http://localhost:4000/deleteproduct', {
             method: 'POST',
@@ -18,7 +38,7 @@ const ListProduct = () => {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
-            body:JSON.stringify({_id:id})
+            body: JSON.stringify({ _id: id })
         })
         await fetchInfo();
     }
@@ -43,7 +63,7 @@ const ListProduct = () => {
                         {allProducts.map((product, i) => (
                             <tr key={i} className='border-b border-slate-900/20 text-gray-20 p-6 medium-14'>
                                 <td className='flexStart sm:flexCenter'>
-                                    <img src={product.images} alt="" height={43} width={43} className='rounded-lg ring-1 ring-slate-900/5 my-1'/>
+                                    <img src={product.images} alt="" height={43} width={43} className='rounded-lg ring-1 ring-slate-900/5 my-1' />
                                 </td>
                                 <td><div className='line-clamp-3'>{product.name}</div></td>
                                 <td>{product.description}</td>
@@ -51,7 +71,7 @@ const ListProduct = () => {
                                 <td>{product.stock}</td>
                                 <td>{product.category}</td>
                                 <td>{product.shop_id}</td>
-                                <td><div className='bold-22 pl-6 sm:pl-14'><TbTrash onClick={() => remove_product(product._id)}/></div></td>
+                                <td><div className='bold-22 pl-6 sm:pl-14'><TbTrash onClick={() => remove_product(product._id)} /></div></td>
                             </tr>
                         ))}
                     </tbody>

@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import upload_area from "../../assets/upload_area.svg"
 import { MdAdd } from "react-icons/md"
 
 const AddProduct = () => {
     const [image, setImage] = useState(false);
+    const [shopId, setShopId] = useState("");
     const [productDetails, setProductDetails] = useState({
         name: "",
         images: "",
@@ -11,8 +12,37 @@ const AddProduct = () => {
         price: "",
         stock: "",
         description: "",
-        shop_id: "10"
+        shop_id: shopId
     });
+
+    const fetchInfo = async () => {
+        const userId = localStorage.getItem("UserID");
+
+        // optional: make sure you have a userId
+        if (!userId) {
+            console.error("No userId found in localStorage");
+            return;
+        }
+
+        try {
+            // First, fetch the shop info for this user
+            const shopRes = await fetch(`http://localhost:4000/get-shop-by-user/${userId}`);
+            const shopData = await shopRes.json();
+            setShopId(shopData._id);
+
+            setProductDetails((prev) => ({
+                ...prev,
+                shop_id: shopData._id,
+            }));
+
+        } catch (err) {
+            console.error("Failed to fetch shop or products:", err);
+        }
+    }
+
+    useEffect(() => {
+        fetchInfo();
+    }, [])
 
     const imageHandler = (e) => {
         setImage(e.target.files[0])
@@ -59,7 +89,7 @@ const AddProduct = () => {
                         price: "",
                         stock: "",
                         description: "",
-                        shop_id: "10"
+                        shop_id: shopId
                     });
                     setImage(false);
                 } else {
@@ -89,12 +119,16 @@ const AddProduct = () => {
             </div>
             <div className="mb-3 flex items-center gap-x-4">
                 <h4>Shop:</h4>
-                <select value={productDetails.shop_id} onChange={changeHandler} name="shop_id" id="" className='bg-primary ring-1 ring-slate-900/20 medium-16 rounded-sm outline-none'>
+                {/* <select value={productDetails.shop_id} onChange={changeHandler} name="shop_id" id="" className='bg-primary ring-1 ring-slate-900/20 medium-16 rounded-sm outline-none'>
                     <option value="10">Shop 1</option>
                     <option value="11">Shop 2</option>
                     <option value="12">Shop 3</option>
                     <option value="13">Shop 4</option>
-                </select>
+                </select> */}
+                <input
+                    type="text" value={shopId} readOnly name="shop_id"
+                    className="bg-primary ring-1 ring-slate-900/20 medium-16 rounded-sm outline-none px-2 py-1"
+                />
             </div>
             <div className="mb-3 flex items-center gap-x-4">
                 <h4>Product Category:</h4>
@@ -110,7 +144,7 @@ const AddProduct = () => {
                 </label>
                 <input onChange={imageHandler} type="file" name="images" id="file-input" hidden className="bg-primary max-w-80 w-full py-3 px-4" />
             </div>
-            <button onClick={(e) => { e.preventDefault(); Add_Product();} } className='btn_dark_rounded mt-4 flexCenter gap-x-1'><MdAdd />Add product</button>
+            <button onClick={(e) => { e.preventDefault(); Add_Product(); }} className='btn_dark_rounded mt-4 flexCenter gap-x-1'><MdAdd />Add product</button>
         </div>
     )
 }

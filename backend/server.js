@@ -69,7 +69,7 @@ app.use('/images', express.static('upload/images'))
 app.post("/upload", upload.single('product'), (req, res) => {
   res.json({
     success: 1,
-    image_url: `http://localhost:${MONGODB_PORT}/images/${req.file.filename}`
+    image_url: `http://localhost:${PORT}/images/${req.file.filename}`
   })
 })
 
@@ -189,6 +189,30 @@ app.post('/login', async (req, res) => {
 
 //cart
 app.use("/cart", require("./routes/cartRoute"));
+
+//for shops
+app.get('/shop/:shopId', async (req, res) => {
+  const shopId = req.params.shopId;
+
+  try {
+    const products = await Product.find({ shop_id: shopId });
+    console.log(`Products for shop ${shopId} fetched.`);
+    res.json(products);
+  } catch (err) {
+    console.error("Error fetching products by shop:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get('/get-shop-by-user/:userId', async (req, res) => {
+  const { userId } = req.params;
+  const shop = await Shop.findOne({ owner_id: userId });
+  if (shop) {
+      res.json(shop);
+  } else {
+      res.status(404).json({ error: "Shop not found" });
+  }
+});
 
 // Creating middlewear to fetch user
 // const fetchUser = async (req, res, next) => {

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Shop = require("./shop");
 
 const productSchema = new mongoose.Schema({
     _id: {
@@ -36,12 +37,9 @@ const productSchema = new mongoose.Schema({
     shop_id: {
       type: String,
       required: true,
-    },
-    created_at: {
-      type: Date,
-      default: Date.now,
-    },
-  });
+      ref: 'Shop',
+    }
+  }, { timestamps: true });
   
 // module.exports = mongoose.model("Product", productSchema);
 

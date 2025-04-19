@@ -42,9 +42,6 @@ const userSchema = new mongoose.Schema({
 
   wishlist: [{ type: String }], // Array of product ID strings (or ObjectIds if you link to Products)
 
-  created_at: { type: Date, default: Date.now },
-  updated_at: { type: Date, default: Date.now },
-
   first_name: {
     type: String,
     required: true
@@ -57,7 +54,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   }
-});
+}, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;
