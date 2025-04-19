@@ -50,3 +50,35 @@ module.exports = client;
 //   sql,
 //   poolPromise,
 // };
+
+
+// 2) CASSANDRA CONFIG
+const cassandra = require('cassandra-driver');
+const cassandraClient = new cassandra.Client({
+    contactPoints: [process.env.CASSANDRA_HOST || 'localhost'],
+    localDataCenter: process.env.CASSANDRA_DATACENTER || 'datacenter1',
+    keyspace: process.env.CASSANDRA_KEYSPACE || 'ecommerce'
+});
+(async () => {
+    try {
+        await cassandraClient.connect();
+        console.log('✅ Connected to Cassandra');
+    } catch (err) {
+        console.error('❌ Cassandra connection failed:', err);
+    }
+})();
+
+// Hàm lấy data mẫu
+async function getCassandraData(query = 'SELECT * FROM your_table') {
+    const result = await cassandraClient.execute(query);
+    return result.rows;
+}
+
+//
+// 3) EXPORT
+//
+module.exports = {
+    //redisClient,
+    cassandraClient,
+    getCassandraData
+};

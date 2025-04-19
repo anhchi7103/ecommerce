@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+﻿import { createContext, useEffect, useState } from "react";
 
 export const ShopContext = createContext(null);
 
@@ -201,7 +201,30 @@ const ShopContextProvider = (props) => {
         return totalItem;
     };
 
-    const contextValue = { all_products, cartItems, addToCart, removeFromCart, getTotalCartAmount, getTotalCartItems, triggerRender, setTriggerRender };
+    // Xóa sạch giỏ hàng - QChi
+    const clearCart = () => {
+        setCartItems({});
+    };
+
+    // Gửi đơn hàng đến backend - QChi
+    const checkout = async (orderPayload) => {
+        const response = await fetch('http://localhost:4000/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderPayload)
+        });
+        if (!response.ok) {
+            throw new Error('Checkout failed');
+        }
+        const data = await response.json();
+        clearCart();
+        return data.order_id;
+    };
+
+    const contextValue = {
+        all_products, cartItems, addToCart, removeFromCart, getTotalCartAmount, getTotalCartItems, triggerRender, setTriggerRender,
+        clearCart, checkout
+    };
 
     return (
         <ShopContext.Provider value={contextValue}>
@@ -209,5 +232,12 @@ const ShopContextProvider = (props) => {
         </ShopContext.Provider>
     )
 }
+
+//QChi
+import PropTypes from 'prop-types';
+ShopContextProvider.propTypes = {
+    children: PropTypes.node.isRequired,
+};
+//
 
 export default ShopContextProvider;
