@@ -7,7 +7,7 @@ const multer = require("multer");
 const { error } = require("console");
 
 const redisClient = require('./middleware/dbConfig');
-const { connectCassandra } = require('./middleware/cassandra');
+const { getCassandraData } = require('./middleware/cassandra');
 
 require("dotenv").config();
 
@@ -34,7 +34,7 @@ app.get('/', (req, res) => {
   res.send('Backend is running!');
 });
 
-connectCassandra();
+getCassandraData();
 
 mongoose.connect(process.env.MONGODB_URL)
   .then(() => {
