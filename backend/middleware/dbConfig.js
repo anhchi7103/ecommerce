@@ -3,11 +3,20 @@ const redis = require("redis");
 
 require("dotenv").config();
 
+// const client = redis.createClient({
+//   url: process.env.REDIS_URL || "redis://localhost:6379"
+// });
+
 const client = redis.createClient({
-  url: process.env.REDIS_URL || "redis://localhost:6379"
+  username: process.env.REDIS_USERNAME,
+  password: process.env.REDIS_PASSWORD,
+  socket: {
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+  }
 });
 
-client.on('error', err => console.log('Redis Client Error', err));
+client.on('error', (err) => console.error('Redis Client Error', err));
 
 // Connect inside an IIFE (Immediately Invoked Function Expression)
 (async () => {
@@ -19,7 +28,10 @@ client.on('error', err => console.log('Redis Client Error', err));
   }
 })();
 
+
 module.exports = client;
+
+
 // SQL Server configuration
 // const config = {
 //   user: process.env.DB_USER, // Database username

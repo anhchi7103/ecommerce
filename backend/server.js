@@ -38,7 +38,7 @@ app.get('/', (req, res) => {
   res.send('Backend is running!');
 });
 
-getCassandraData();
+//getCassandraData();
 
 mongoose.connect(process.env.MONGODB_URL)
   .then(() => {
@@ -66,8 +66,8 @@ app.get('/cache-test', async (req, res) => {
 //   console.log(`Server is running on http://localhost:${REDIS_PORT}`);
 // });
 
-app.listen(MONGODB_PORT, () => {
-  console.log(`Server is running on http://localhost:${MONGODB_PORT}`);
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
 
 //image storage engine
