@@ -13,7 +13,8 @@ const CartItems = () => {
             ...product,
             quantity: cartItem.quantity
         };
-    }).filter(Boolean); // remove nulls if product not found
+    }).filter(Boolean); // remove nulls
+
 
     const totalAmount = mergedCartItems.reduce((total, item) => {
         return total + item.price * item.quantity;

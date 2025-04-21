@@ -3,7 +3,7 @@ const mockOrders = [
     {
         orderId: 'DH001',
         status: {
-            currentStatus: 'Đơn hàng đã hoàn thành',
+            currentStatus: 'Đã giao cho ĐVVC',
             history: [
                 { status: 'Đơn hàng đã đặt', time: '2025-04-01 10:00' },
                 { status: 'Đã xác nhận thông tin thanh toán', time: '2025-04-01 10:05' },

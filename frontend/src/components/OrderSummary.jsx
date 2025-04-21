@@ -1,46 +1,49 @@
 ﻿import PropTypes from 'prop-types';
 
-export default function OrderSummary({ total, fee, discount }) {
-    const totalAmount = total + fee - discount;
+const OrderSummary = ({ cartItems }) => {
+    if (!cartItems || cartItems.length === 0) return null;
+
+    const subtotal = cartItems.reduce((total, item) => {
+        const itemPrice = item.price || 0;
+        const quantity = item.quantity || 0;
+        return total + itemPrice * quantity;
+    }, 0);
+
+    // Mock values — you can replace these with dynamic props/state later
+    const shippingFee = 25; // e.g., 25k VND
+    const discount = 15;    // e.g., 15k VND
+
+    const grandTotal = subtotal + shippingFee - discount;
 
     return (
-        <section className="my-6 p-4 bg-white rounded shadow">
-            <h3 className="text-lg font-semibold mb-2">Tóm tắt đơn hàng</h3>
+        <div className="bg-white p-4 rounded-lg shadow-md w-full mt-6">
+            <h2 className="text-2xl font-bold mb-4">Tổng thanh toán</h2>
 
-            {/* Hiển thị tổng tiền hàng */}
-            <div className="flex justify-between mb-1">
-                <span>Tổng tiền hàng:</span>
-                <span className="font-medium">{total.toLocaleString()} ₫</span>
+            <div className="flex justify-between text-gray-700 text-base mb-2">
+                <span>Tạm tính:</span>
+                <span>{subtotal.toLocaleString('vi-VN')}₫</span>
             </div>
 
-            {/* Hiển thị tổng tiền phí vận chuyển */}
-            <div className="flex justify-between mb-1">
-                <span>Tổng tiền phí vận chuyển:</span>
-                <span className="font-medium">{fee.toLocaleString()} ₫</span>
+            <div className="flex justify-between text-gray-700 text-base mb-2">
+                <span>Phí vận chuyển:</span>
+                <span>{shippingFee.toLocaleString('vi-VN')}₫</span>
             </div>
 
-            {/* Hiển thị giảm giá từ voucher (nếu có) */}
-            {discount > 0 && (
-                <div className="flex justify-between mb-1 text-green-600">
-                    <span>Tổng cộng Voucher giảm giá:</span>
-                    <span>-{discount.toLocaleString()} ₫</span>
-                </div>
-            )}
-
-            {/* Đường kẻ ngăn cách */}
-            <hr className="my-2" />
-
-            {/* Hiển thị tổng thanh toán */}
-            <div className="flex justify-between text-xl font-bold">
-                <span>Tổng thanh toán:</span>
-                <span>{totalAmount.toLocaleString()} ₫</span>
+            <div className="flex justify-between text-gray-700 text-base mb-4">
+                <span>Giảm giá:</span>
+                <span>-{discount.toLocaleString('vi-VN')}₫</span>
             </div>
-        </section>
+
+            <div className="flex justify-between font-bold text-xl text-black border-t pt-4">
+                <span>Tổng cộng:</span>
+                <span>{grandTotal.toLocaleString('vi-VN')}₫</span>
+            </div>
+        </div>
     );
-}
+};
 
 OrderSummary.propTypes = {
-    total: PropTypes.number.isRequired,       // Tổng tiền hàng
-    fee: PropTypes.number.isRequired,         // Phí vận chuyển
-    discount: PropTypes.number.isRequired,    // Giảm giá (nếu có)
+    cartItems: PropTypes.array.isRequired
 };
+
+export default OrderSummary;
