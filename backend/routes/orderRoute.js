@@ -9,37 +9,59 @@ router.post('/', async (req, res) => {
     try {
         const {
             user_id,
-            buyer_name, buyer_phone, buyer_address,
+            user_name,
+            user_phone,
+            user_address_id,
+
+            shop_id,
             shop_name,
-            shipping_carrier, tracking_number,
-            product_name, quantity, shop_rating,
-            item_total, shipping_fee, shipping_discount,
-            voucher_discount, total_price,
-            payment_method
+
+            ship_id,
+            ship_unit,
+            ship_tracking_id,
+
+            payment_method_id,
+            payment_method,
+
+            total_amount,
+            shipping_fee,
+            shipping_discount,
+            voucher,
+
+            items
         } = req.body;
 
         // Validate tối thiểu
-        if (!user_id || !product_name || !quantity) {
-            return res.status(400).json({ message: 'Thiếu user_id, product_name hoặc quantity' });
+        if (!user_id || !items || items.length === 0) {
+            return res.status(400).json({ message: 'Thiếu user_id hoặc danh sách sản phẩm' });
         }
 
         const orderData = {
+            order_id: uuidv4(),
+            session_id: uuidv4(),
+
             user_id,
-            buyer_name,
-            buyer_phone,
-            buyer_address,
+            user_name,
+            user_phone,
+            user_address_id,
+
+            shop_id,
             shop_name,
-            shipping_carrier,
-            tracking_number,
-            product_name,
-            quantity,
-            shop_rating,
-            item_total,
+
+            ship_id,
+            ship_unit,
+            ship_tracking_id,
+
+            payment_method_id,
+            payment_method,
+
+            total_amount,
             shipping_fee,
             shipping_discount,
-            voucher_discount,
-            total_price,
-            payment_method
+            voucher,
+
+            created_at: new Date(),
+            items
         };
 
         // Call createOrder function from model

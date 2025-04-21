@@ -207,19 +207,34 @@ const ShopContextProvider = (props) => {
     };
 
     // Gửi đơn hàng đến backend - QChi
-    const checkout = async (orderPayload) => {
-        const response = await fetch('http://localhost:4000/api/orders', {
+    const checkout = async (payment_method) => {
+        const userId = localStorage.getItem("UserID");
+
+        if (!userId) {
+            throw new Error('No userId found. Please login.');
+        }
+
+        const response = await fetch('http://localhost:4000/api/orders/create-from-cart', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderPayload)
+            body: JSON.stringify({
+                userId,
+                payment_method: payment_method || 'COD'
+            })
         });
+
         if (!response.ok) {
             throw new Error('Checkout failed');
         }
+
         const data = await response.json();
+
+        // Clear cart after successful order
         clearCart();
+
         return data.order_id;
     };
+
 
     const contextValue = {
         all_products, cartItems, addToCart, removeFromCart, getTotalCartAmount, getTotalCartItems, triggerRender, setTriggerRender,

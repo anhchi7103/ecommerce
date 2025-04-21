@@ -1,39 +1,56 @@
-﻿//import { useContext } from 'react';
-//import { ShopContext } from '../Context/ShopContext';
-import PropTypes from 'prop-types';
+﻿import PropTypes from 'prop-types';
 
 const OrderItems = ({ cartItems }) => {
+    if (!cartItems || cartItems.length === 0) {
+        return (
+            <div className="bg-white p-4 rounded-lg shadow-md w-full text-center text-gray-500">
+                Không có sản phẩm trong đơn hàng.
+            </div>
+        );
+    }
+
     return (
-        <div className='bg-white p-4 rounded-lg shadow-md w-full'>
-            <h2 className='bold-20 mb-4'>Thông tin sản phẩm</h2>
-            <div className='flex flex-col gap-4'>
-                {Object.values(cartItems).map((item) => {
-                    if (item.quantity > 0) {
-                        return (
-                            <div key={item._id} className='flex items-center gap-4 border-b pb-4'>
-                                <img src={item.images} alt={item.name} className='w-16 h-16 rounded-md object-cover ring-1 ring-slate-300' />
-                                <div className='flex-1'>
-                                    <p className='font-medium text-lg'>{item.name}</p>
-                                    <p className='text-sm text-gray-500'>{item.shopName}</p>
-                                    <p className='text-sm text-gray-600'>Đơn giá: {item.price.toLocaleString('vi-VN')}₫</p>
-                                    <p className='text-sm text-gray-600'>Số lượng: {item.quantity}</p>
-                                </div>
-                                <p className='font-semibold text-lg'>
-                                    {(item.price * item.quantity).toLocaleString('vi-VN')}₫
+        <div className="bg-white p-4 rounded-lg shadow-md w-full">
+            <h2 className="text-2xl font-bold mb-4">Thông tin sản phẩm</h2>
+
+            <div className="flex flex-col gap-4">
+                {cartItems.map((item) => {
+                    const itemPrice = item.price || 0; // 🛡️ if item.price undefined, fallback 0
+                    const totalItemPrice = (itemPrice * (item.quantity || 0));
+
+                    return (
+                        <div
+                            key={item._id || item.productId}
+                            className="flex items-center gap-4 border-b pb-4"
+                        >
+                            <img
+                                src={Array.isArray(item.images) ? item.images[0] : item.images || '/placeholder.jpg'}
+                                alt={item.name}
+                                className="w-16 h-16 rounded-md object-cover ring-1 ring-slate-300"
+                            />
+                            <div className="flex-1">
+                                <p className="font-medium text-lg">{item.name}</p>
+                                {item.shopName && <p className="text-sm text-gray-500">{item.shopName}</p>}
+                                <p className="text-sm text-gray-600">
+                                    Đơn giá: {itemPrice.toLocaleString('vi-VN')}₫
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                    Số lượng: {item.quantity || 0}
                                 </p>
                             </div>
-                        );
-                    }
-                    return null;
+                            <p className="font-semibold text-lg">
+                                {totalItemPrice.toLocaleString('vi-VN')}₫
+                            </p>
+                        </div>
+                    );
                 })}
             </div>
         </div>
     );
 };
 
-export default OrderItems;
 OrderItems.propTypes = {
-    cartItems: PropTypes.object.isRequired
+    cartItems: PropTypes.array.isRequired
 };
 
-
+export default OrderItems;
