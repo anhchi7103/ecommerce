@@ -1,4 +1,5 @@
-﻿const { astraClient } = require('../middleware/cassandra');
+﻿// const { astraClient } = require('../middleware/cassandra');
+const astraClient = require('../middleware/cassandra'); 
 const User = require('../model/user');
 const redisClient = require('../middleware/dbConfig');
 const { v4: uuidv4 } = require('uuid');
