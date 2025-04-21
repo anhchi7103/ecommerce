@@ -62,8 +62,8 @@ const CartItems = () => {
                         <h4 className='bold-20'>Receipt</h4>
                         <div className='flex-row w-60'>
                             <div className='flexBetween py-4'>
-                                <h4 className='medium-16'>Subtotal:</h4>
-                                <h4 className='text-gray-30 font-semibold'>{totalAmount}</h4>
+                                <h4 className='bold-18'>Subtotal:</h4>
+                                <h4 className='bold-18'>{totalAmount}</h4>
                             </div>
                             <hr />
                             <div className='flexBetween py-4'>
@@ -71,21 +71,6 @@ const CartItems = () => {
                                 <h4 className='text-gray-30 font-semibold'>Free</h4>
                             </div>
                             <hr />
-                            <div className='flexBetween py-4'>
-                                <h4 className='medium-16'>Giảm giá:</h4>
-                                <h4 className='text-gray-30 font-semibold'>{/*discount.toLocaleString("vi-VN", {
-                                    style: "currency",
-                                    currency: "VND",
-                                }) || '0'*/}</h4>
-                            </div>
-                            <hr />
-                            <div className='flexBetween py-4'>
-                                <h4 className='bold-18'>Total: </h4>
-                                <h4 className='bold-18'>{/*total.toLocaleString("vi-VN", {
-                                    style: "currency",
-                                    currency: "VND",
-                                }) || '0'*/}</h4>
-                            </div>
                         </div>
                         <button /*onClick={handleCheckout}*/ className='btn_dark_rounded w-44'>Thanh toán</button>
                     </div>
