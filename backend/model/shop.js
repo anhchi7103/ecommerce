@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 
 const ShopSchema = new mongoose.Schema({
-  _id: {
-    type: String,
-    required: true,
-  },
+  // _id: {
+  //   type: String,
+  //   required: true,
+  // },
   owner_id: {
     type: String,
     required: true,

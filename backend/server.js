@@ -207,27 +207,33 @@ app.get('/get-shop-by-user/:userId', async (req, res) => {
     }
 });
 
+app.get('/get-shop-by-id/:shopId', async (req, res) => {
+    const shop = await Shop.findById(req.params.shopId); 
+    res.json(shop);
+  });
+  
+
 app.post('/register-shop/:userId', async (req, res) => {
     try {
         // Kiểm tra user có tồn tại không
         const user = await User.findById(req.params.userId);
         if (!user) {
-        return res.status(404).json({ success: false, error: "User not found" });
+            return res.status(404).json({ success: false, error: "User not found" });
         }
 
         // Lấy danh sách shop để tạo id mới
-        const shops = await Shop.find({});
-        const id = shops.length > 0
-        ? `${Number(shops.slice(-1)[0]._id.split('_')[1]) + 1}`
-        : "1";
+        // const shops = await Shop.find({});
+        // // const id = shops.length > 0
+        // //     ? `${Number(shops.slice(-1)[0]._id.split('_')[1]) + 1}`
+        // //     : "1";
 
         // Tạo shop mới
         const shop = new Shop({
-        _id: id,
-        owner_id: user._id,  // chỉ lấy ID
-        shop_name: req.body.shop_name,
-        description: req.body.description,
-        rating: 0
+            // _id: id,
+            owner_id: user._id,  // chỉ lấy ID
+            shop_name: req.body.shop_name,
+            description: req.body.description,
+            rating: 0
         });
 
         await shop.save();
