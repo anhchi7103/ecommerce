@@ -244,6 +244,27 @@ app.post('/register-shop/:userId', async (req, res) => {
     }
 });
 
+//const mongoose = require('mongoose'); // đảm bảo import
+const fetchShopInfo = async () => {
+    try {
+        const shopIdStr = String(firstProduct.shop_id); // Ép kiểu chắc chắn
+
+        const res = await fetch(`http://localhost:4000/shop/info/${shopIdStr}`);
+        const data = await res.json();
+
+        if (data.success) {
+            setShopName(data.shop.shop_name || 'Shop không tên');
+            setShopId(shopIdStr);
+        } else {
+            console.warn('Không tìm thấy shop:', shopIdStr);
+        }
+    } catch (err) {
+        console.error('Lỗi khi lấy thông tin shop:', err);
+        setShopName('Không lấy được tên shop');
+    }
+};
+
+
 // Final Server Listen
 app.listen(PORT, () => {
     console.log(`🚀 Server is running on http://localhost:${PORT}`);

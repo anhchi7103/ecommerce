@@ -1,4 +1,6 @@
-﻿import { useState, useContext, useEffect } from 'react';
+﻿/* ===== 📄 Checkout.jsx (Updated to load all fields properly) ===== */
+
+import { useState, useContext, useEffect } from 'react';
 import { ShopContext } from '../Context/ShopContext';
 import ShippingInfo from '../components/ShippingInfo';
 import PaymentMethod from '../components/PaymentMethod';
@@ -9,7 +11,15 @@ import axios from 'axios';
 export default function Checkout() {
     const { cartItems, all_products, getTotalCartAmount, clearCart } = useContext(ShopContext);
 
-    const [info, setInfo] = useState({ name: '', address: '', phone: '' });
+    const [info, setInfo] = useState({
+        name: '',
+        address_id: '',
+        street: '',
+        city: '',
+        country: '',
+        phone: ''
+    });
+
     const [payment, setPayment] = useState('COD');
     const [fee, setFee] = useState(0);
     const [discount, setDiscount] = useState(0);
@@ -17,29 +27,39 @@ export default function Checkout() {
     const [shopId, setShopId] = useState('');
 
     const userId = localStorage.getItem('UserID');
-    const total = getTotalCartAmount();
 
     const mergedCartItems = Object.values(cartItems).map((cartItem) => {
         const product = all_products.find(p => String(p._id) === cartItem.productId);
         if (!product) return null;
-        return { ...product, quantity: cartItem.quantity };
+        return {
+            ...product,
+            quantity: cartItem.quantity,
+            shop_id: product.shop_id || ''
+        };
     }).filter(Boolean);
 
     useEffect(() => {
-        setFee(Math.floor(Math.random() * 25000 + 15000));      // 15,000 – 40,000 VND
-        setDiscount(Math.floor(Math.random() * 50000));         // 0 – 50,000 VND
+        // Random fee từ 0.5 USD đến 2.0 USD
+        const randomFee = (Math.random() * (2.0 - 0.5) + 0.5).toFixed(2);
+        setFee(parseFloat(randomFee));
+
+        // Random discount từ 0 đến 3.0 USD
+        const randomDiscount = (Math.random() * 3.0).toFixed(2);
+        setDiscount(parseFloat(randomDiscount));
     }, []);
 
+
     useEffect(() => {
+        if (mergedCartItems.length === 0) return;
         const firstProduct = mergedCartItems[0];
         if (!firstProduct?.shop_id) return;
 
         const fetchShopInfo = async () => {
             try {
-                const res = await fetch(`http://localhost:4000/shop/${firstProduct.shop_id}`);
+                const res = await fetch(`http://localhost:4000/shop/info/${firstProduct.shop_id}`);
                 const data = await res.json();
                 if (data.success) {
-                    setShopName(data.shop?.name || 'Shop không tên');
+                    setShopName(data.shop?.shop_name || 'Shop không tên');
                     setShopId(firstProduct.shop_id);
                 }
             } catch (err) {
@@ -56,45 +76,55 @@ export default function Checkout() {
 
         try {
             const items = mergedCartItems.map(item => ({
-                product_id: item._id,
+                product_id: String(item._id),
                 product_name: item.name,
-                image_url: item.images,
+                image_url: Array.isArray(item.images) ? item.images[0] : item.images || '',
                 quantity: item.quantity,
-                item_price: item.price,
-                item_amount: item.price * item.quantity
+                item_price: parseFloat(item.price),
+                item_amount: parseFloat(item.price) * (item.quantity || 1)
             }));
+
+            const itemsTotal = items.reduce((sum, item) => sum + item.item_amount, 0);
+            const shippingFee = fee || 0;
+            const discountAmount = discount || 0;
+            const totalAmount = itemsTotal + shippingFee - discountAmount;
 
             const payload = {
                 user_id: userId,
                 user_name: info.name,
                 user_phone: info.phone,
-                user_address_id: info.address,
+
+                user_address_id: info.address_id,
+                user_address_street: info.street,
+                user_address_city: info.city,
+                user_address_country: info.country,
 
                 shop_id: shopId,
                 shop_name: shopName,
 
                 ship_id: 'ghtk_demo_01',
                 ship_unit: 'GHTK',
-                ship_tracking_id: '',
+                ship_tracking_id: 'track123',
 
-                payment_method_id: payment.toLowerCase(), // e.g. 'cod', 'paypal'
+                payment_method_id: payment.toLowerCase(),
                 payment_method: payment,
 
-                total_amount: total,
-                shipping_fee: fee,
-                shipping_discount: 0,
-                voucher: discount,
+                total_amount: totalAmount,
+                shipping_fee: shippingFee,
+                shipping_discount: discountAmount,
+                voucher: 0,
 
                 items
             };
-            console.log(payload);
+
+            console.log('Payload gửi:', payload);
+
             const res = await axios.post('http://localhost:4000/api/orders', payload);
             if (res.status === 201) {
                 alert('🎉 Đặt hàng thành công! Mã đơn hàng: ' + res.data.order_id);
-                clearCart(); // Clear cart after success
+                clearCart();
             }
         } catch (err) {
-            
             console.error('Checkout error:', err);
             alert('❌ Không thể tạo đơn hàng!');
         }
@@ -111,18 +141,9 @@ export default function Checkout() {
             )}
 
             <OrderItems cartItems={mergedCartItems} />
-
-            <ShippingInfo
-                info={info}
-                onChange={e => setInfo({ ...info, [e.target.name]: e.target.value })}
-            />
-
-            <PaymentMethod
-                selected={payment}
-                onChange={e => setPayment(e.target.value)}
-            />
-
-            <OrderSummary total={total} fee={fee} discount={discount} cartItems={mergedCartItems} />
+            <ShippingInfo info={info} onChange={e => setInfo({ ...info, [e.target.name]: e.target.value })} />
+            <PaymentMethod selected={payment} onChange={e => setPayment(e.target.value)} />
+            <OrderSummary total={getTotalCartAmount()} fee={fee} discount={discount} cartItems={mergedCartItems} />
 
             <button
                 onClick={handleConfirm}

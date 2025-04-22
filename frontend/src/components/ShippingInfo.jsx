@@ -1,11 +1,16 @@
-﻿import { useEffect, useState } from 'react';
+﻿/* ===== 📄 ShippingInfo.jsx (Full file đã fix đủ 3 trường địa chỉ riêng biệt) ===== */
+
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 
 export default function ShippingInfo({ onChange }) {
     const [info, setInfo] = useState({
         name: '',
-        address: '',
+        address_id: '',
+        street: '',
+        city: '',
+        country: '',
         phone: ''
     });
 
@@ -23,21 +28,28 @@ export default function ShippingInfo({ onChange }) {
                 const user = res.data;
 
                 if (user) {
-                    const addressObj = user.address?.[0]; // First saved address
-                    const fullAddress = addressObj
-                        ? `${addressObj.street}, ${addressObj.city}, ${addressObj.country}`
-                        : '';
+                    const addressObj = user.address?.[0] || {};
 
                     const updatedInfo = {
                         name: `${user.first_name} ${user.last_name}`,
-                        address: fullAddress,
+                        address_id: addressObj.address_id || '',
+                        street: addressObj.street || '',
+                        city: addressObj.city || '',
+                        country: addressObj.country || '',
                         phone: user.phone_number || ''
                     };
 
+
                     setInfo(updatedInfo);
-                    onChange({ target: { name: 'name', value: updatedInfo.name } });
-                    onChange({ target: { name: 'address', value: updatedInfo.address } });
+
+                    // Gửi dữ liệu lên parent component
+                    onChange({ target: { name: 'address_id', value: updatedInfo.address_id } });
+                    onChange({ target: { name: 'street', value: updatedInfo.street } });
+                    onChange({ target: { name: 'city', value: updatedInfo.city } });
+                    onChange({ target: { name: 'country', value: updatedInfo.country } });
                     onChange({ target: { name: 'phone', value: updatedInfo.phone } });
+                    onChange({ target: { name: 'name', value: updatedInfo.name } });
+
                 }
             } catch (error) {
                 console.error('Error fetching user info:', error);
@@ -45,39 +57,58 @@ export default function ShippingInfo({ onChange }) {
         }
 
         fetchUser();
-    }, [userId]);
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        const updated = { ...info, [name]: value };
-        setInfo(updated);
-        onChange(e); // also notify parent
-    };
+    }, [userId, onChange]);
 
     return (
         <section className="my-6 p-4 bg-white rounded shadow">
             <h3 className="text-lg font-semibold mb-2">Địa chỉ nhận hàng</h3>
+
+            {/* Họ tên */}
             <input
-                className="block w-full mb-2 p-2 border rounded"
+                className="block w-full mb-2 p-2 border rounded bg-gray-100"
                 name="name"
                 placeholder="Họ tên"
                 value={info.name}
-                onChange={handleInputChange}
+                readOnly
             />
+
+            {/* Đường/Số nhà */}
             <input
-                className="block w-full mb-2 p-2 border rounded"
-                name="address"
-                placeholder="Địa chỉ"
-                value={info.address}
-                onChange={handleInputChange}
+                className="block w-full mb-2 p-2 border rounded bg-gray-100"
+                name="street"
+                placeholder="Đường/Số nhà"
+                value={info.street}
+                readOnly
             />
+
+            {/* Thành phố */}
             <input
-                className="block w-full mb-2 p-2 border rounded"
+                className="block w-full mb-2 p-2 border rounded bg-gray-100"
+                name="city"
+                placeholder="Thành phố"
+                value={info.city}
+                readOnly
+            />
+
+            {/* Quốc gia */}
+            <input
+                className="block w-full mb-2 p-2 border rounded bg-gray-100"
+                name="country"
+                placeholder="Quốc gia"
+                value={info.country}
+                readOnly
+            />
+
+            {/* Số điện thoại */}
+            <input
+                className="block w-full mb-2 p-2 border rounded bg-gray-100"
                 name="phone"
                 placeholder="Số điện thoại"
                 value={info.phone}
-                onChange={handleInputChange}
+                readOnly
             />
+            <input type="hidden" name="address_id" value={info.address_id} />
+
         </section>
     );
 }
