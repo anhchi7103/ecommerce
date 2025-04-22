@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const { userId } = useParams(); // ✅ lấy owner_id
+// const { userId } = useParams(); // ✅ lấy owner_id
 
 const RegisterShop = () => {
   const [formData, setFormData] = useState({
@@ -26,7 +26,7 @@ const RegisterShop = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:4000/register-shop', {
+      const response = await fetch('http://localhost:4000/register-shop/' + userId, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
