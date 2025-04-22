@@ -209,7 +209,7 @@ app.get('/get-shop-by-user/:userId', async (req, res) => {
 
 app.get('/get-shop-by-id/:shopId', async (req, res) => {
     const shop = await Shop.findById(req.params.shopId); 
-    res.json(shop);
+    res.json({ success: true, shop });
   });
 
 app.post('/register-shop/:userId', async (req, res) => {
@@ -243,27 +243,6 @@ app.post('/register-shop/:userId', async (req, res) => {
         res.status(500).json({ success: false, error: "Internal server error" });
     }
 });
-
-//const mongoose = require('mongoose'); // đảm bảo import
-const fetchShopInfo = async () => {
-    try {
-        const shopIdStr = String(firstProduct.shop_id); // Ép kiểu chắc chắn
-
-        const res = await fetch(`http://localhost:4000/shop/info/${shopIdStr}`);
-        const data = await res.json();
-
-        if (data.success) {
-            setShopName(data.shop.shop_name || 'Shop không tên');
-            setShopId(shopIdStr);
-        } else {
-            console.warn('Không tìm thấy shop:', shopIdStr);
-        }
-    } catch (err) {
-        console.error('Lỗi khi lấy thông tin shop:', err);
-        setShopName('Không lấy được tên shop');
-    }
-};
-
 
 // Final Server Listen
 app.listen(PORT, () => {

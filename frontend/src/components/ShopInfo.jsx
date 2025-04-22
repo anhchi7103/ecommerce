@@ -9,7 +9,7 @@ const ShopInfo = (props) => {
       try {
         const res = await fetch(`http://localhost:4000/get-shop-by-id/${product.shop_id}`);
         const data = await res.json();
-        setShop(data);
+        setShop(data.shop);
       } catch (err) {
         console.error("Failed to fetch shop info:", err);
       }

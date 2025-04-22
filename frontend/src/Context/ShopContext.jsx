@@ -114,7 +114,7 @@ const ShopContextProvider = (props) => {
             console.error("No userId found in localStorage");
             return;
         }
-        
+
         try {
             const res = await fetch("http://localhost:4000/cart/delete", {
                 method: "POST",
@@ -202,8 +202,29 @@ const ShopContextProvider = (props) => {
     };
 
     // Xóa sạch giỏ hàng - QChi
-    const clearCart = () => {
+    const clearCart = async () => {
+        const userId = localStorage.getItem("UserID"); // get userId dynamically
+
+        if (!userId) {
+            console.error("No userId found in localStorage");
+            return;
+        }
+
         setCartItems({});
+
+        try {
+            const res = await fetch(`http://localhost:4000/cart/clear-cart/${userId}`, {
+                method: "POST",
+            });
+
+            const data = await res.json();
+
+            if (!data.success) {
+                console.error("Failed to clear cart on server, re-syncing...");
+            }
+        } catch (err) {
+            console.error("Error clearing cart:", err);
+        }
     };
 
     // Gửi đơn hàng đến backend - QChi

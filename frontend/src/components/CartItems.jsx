@@ -1,6 +1,7 @@
 import { useContext } from 'react'
 import { ShopContext } from '../Context/ShopContext';
 import { TbTrash } from 'react-icons/tb';
+import { NavLink } from 'react-router-dom';
 
 
 const CartItems = () => {
@@ -73,7 +74,7 @@ const CartItems = () => {
                             </div>
                             <hr />
                         </div>
-                        <button /*onClick={handleCheckout}*/ className='btn_dark_rounded w-44'>Thanh toán</button>
+                        <NavLink to="/checkout" className='btn_dark_rounded w-44'>Thanh toán</NavLink>
                     </div>
                 </div>
             </div>

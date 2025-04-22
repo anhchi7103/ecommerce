@@ -115,4 +115,31 @@ router.post("/delete", async (req, res) => {
   }
 });
 
+router.post("/clear-cart/:userId", async (req, res) => {
+  const { userId } = req.params;
+
+  if (!userId) {
+      return res.status(400).json({ error: "Missing userId" });
+  }
+
+  try {
+      const cartKey = `cart:${userId}`;
+
+      // Check if cart exists
+      const exists = await redisClient.exists(cartKey);
+      if (!exists) {
+          return res.status(404).json({ error: "Cart not found" });
+      }
+
+      // Delete the entire hash
+      await redisClient.del(cartKey);
+
+      res.status(200).json({ success: true, message: "Cart cleared successfully" });
+  } catch (err) {
+      console.error("Error clearing cart:", err);
+      res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
 module.exports = router;

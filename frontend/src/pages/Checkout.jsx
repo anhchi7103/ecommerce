@@ -52,11 +52,15 @@ export default function Checkout() {
     useEffect(() => {
         if (mergedCartItems.length === 0) return;
         const firstProduct = mergedCartItems[0];
-        if (!firstProduct?.shop_id) return;
+        console.log("firstProduct is:", firstProduct);
+
+        if (!firstProduct?.shop_id) {
+            return;
+        }
 
         const fetchShopInfo = async () => {
             try {
-                const res = await fetch(`http://localhost:4000/shop/info/${firstProduct.shop_id}`);
+                const res = await fetch(`http://localhost:4000/get-shop-by-id/${firstProduct.shop_id}`);
                 const data = await res.json();
                 if (data.success) {
                     setShopName(data.shop?.shop_name || 'Shop không tên');
