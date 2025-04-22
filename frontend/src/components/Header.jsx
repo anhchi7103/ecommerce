@@ -14,12 +14,25 @@ const Header = () => {
   const toggleMenu = () => setMenuOpened(!menuOpened);
   const { getTotalCartItems } = useContext(ShopContext);
 
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const UserID = localStorage.getItem("UserID"); // Check if user is logged in
+
+  const handleToggleDropdown = () => {
+    setIsDropdownOpen((prev) => !prev);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("UserID");
+    window.location.replace("/");
+  };
+
+
   return (
     <header className="fixed top-0 m-auto px-6 lg:px-20 w-full bg-white ring-1 ring-slate-900/5 z-10">
       <div className="px-4 flexBetween py-3 max-xs:px-2">
         {/*logo*/}
         <div>
-          <Link> <img src={logo} alt="" height={66} width={66} /></Link>
+          <NavLink to={"/"}> <img src={logo} alt="" height={66} width={66} /></NavLink>
         </div>
         {/* navbar desktop*/}
         <div>
@@ -46,12 +59,35 @@ const Header = () => {
             className="p-1 h-8 w-8 ring-slate-900/30 ring-1 rounded-full"/> 
             <span className="relative flexCenter w-5 h-5 rounded-full bg-secondary text-white medium-14 -top-2">{getTotalCartItems()}</span>
             </NavLink>
-            {localStorage.getItem('UserID') ? <NavLink onClick={() => {localStorage.removeItem('UserID'); window.location.replace("/")}} to={'logout'} className={"btn_secondary_rounded flexCenter"}>
-            <img src={logout} alt="logoutIcon" height={19} width={19}/>
-            </NavLink> :
-            <NavLink to={'login'} className={"btn_secondary_rounded flexCenter"}>
-            <img src={user} alt="userIcon" height={19} width={19}/>
-            </NavLink>}
+            {UserID ? (
+              // If user is logged in, show the dropdown menu
+              <div className="">
+                <button onClick={handleToggleDropdown} className="btn_secondary_rounded flexCenter gap-1">
+                 <img src={user} alt="userIcon" height={19} width={19} />{UserID}
+                </button>
+                {isDropdownOpen && (
+                  <div className="absolute mt-1 w-48 bg-white rounded-xl shadow-lg py-2 border border-gray-200">
+                    <NavLink to="/shop/home" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b border-gray-200">
+                      My Shop
+                    </NavLink>
+                    <NavLink to="" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b border-gray-200">
+                      My Order
+                    </NavLink>
+                    <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100" > Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              // If user is not logged in, show the login button
+              <NavLink
+                to="/login"
+                className="btn_secondary_rounded flexCenter gap-1"
+              >
+                <img src={user} alt="userIcon" height={19} width={19} />
+                Login
+              </NavLink>
+            )}
           </div>
         </div>
       </div>
