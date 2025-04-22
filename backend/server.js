@@ -211,7 +211,6 @@ app.get('/get-shop-by-id/:shopId', async (req, res) => {
     const shop = await Shop.findById(req.params.shopId); 
     res.json(shop);
   });
-  
 
 app.post('/register-shop/:userId', async (req, res) => {
     try {
