@@ -7,13 +7,34 @@ import { FaOpencart } from "react-icons/fa"
 import logout from "../assets/logout.svg"
 import user from "../assets/user.svg"
 import { ShopContext } from "../Context/ShopContext";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
 
   const [menuOpened, setMenuOpened] = useState(false);
   const toggleMenu = () => setMenuOpened(!menuOpened);
   const { getTotalCartItems } = useContext(ShopContext);
+  const navigate = useNavigate();
 
+  const handleShopManageClick = async () => {
+    const userId = localStorage.getItem('UserID');
+    if (!userId) {
+      alert("You must be logged in to access shop management.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:4000/get-shop-by-user/${userId}`);
+      const data = await response.json();
+      if (data && data._id) {
+        navigate('/shop/home'); // đã có shop
+      } else {
+        navigate(`/register-shop/${userId}`); // chưa có -> đăng ký
+      }
+    } catch (error) {
+      console.error("Error checking shop:", error);
+    }
+  }
   return (
     <header className="fixed top-0 m-auto px-6 lg:px-20 w-full bg-white ring-1 ring-slate-900/5 z-10">
       <div className="px-4 flexBetween py-3 max-xs:px-2">
@@ -42,9 +63,17 @@ const Header = () => {
             )
           }
           <div className="flexBetween sm:gap-x-4"> 
-            <NavLink to={"cart-page"} className={"flex"}><FaOpencart 
+            <NavLink to={"cart-page"} className={"flexCenter flex"}><FaOpencart 
             className="p-1 h-8 w-8 ring-slate-900/30 ring-1 rounded-full"/> 
-            <span className="relative flexCenter w-5 h-5 rounded-full bg-secondary text-white medium-14 -top-2">{getTotalCartItems()}</span>
+            <span className="relative flexCenter mr-2 w-5 h-5 rounded-full bg-secondary text-white medium-14 -top-2">{getTotalCartItems()}</span>
+            {localStorage.getItem('UserID') && (
+              <button
+                onClick={handleShopManageClick}
+                className="btn_secondary_rounded flexCenter"
+              >
+                Quản lý Shop
+              </button>
+            )}
             </NavLink>
             {localStorage.getItem('UserID') ? <NavLink onClick={() => {localStorage.removeItem('UserID'); window.location.replace("/")}} to={'logout'} className={"btn_secondary_rounded flexCenter"}>
             <img src={logout} alt="logoutIcon" height={19} width={19}/>
