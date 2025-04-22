@@ -7,6 +7,7 @@ import Cart from "./pages/Cart"
 import SignUp from "./pages/Signup"
 import Product from "./pages/Product"
 import Login from "./pages/Login"
+import RegisterShop from "./pages/RegisterShop"
 import Admin from "./shop/pages/Admin"
 import AddProduct from "./shop/components/AddProduct"
 import ListProduct from "./shop/components/ListProduct"
@@ -70,6 +71,7 @@ export default function App() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/orderlist" element={<OrderList />} />
           <Route path="/purchasehistory" element={<PurchaseHistory />} />
+          <Route path="/register-shop/:userId" element={<RegisterShop />} />
           {/* Admin/shop routes */}
           <Route path="/shop/home" element={<Admin />} />
           <Route path="/shop/addproduct" element={<AddProduct />} />
