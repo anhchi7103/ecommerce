@@ -4,14 +4,14 @@ const OrderItems = ({ cartItems }) => {
     if (!cartItems || cartItems.length === 0) {
         return (
             <div className="bg-white p-4 rounded-lg shadow-md w-full text-center text-gray-500">
-                Không có sản phẩm trong đơn hàng.
+                No item in this order.
             </div>
         );
     }
 
     return (
         <div className="bg-white p-4 rounded-lg shadow-md w-full">
-            <h2 className="text-2xl font-bold mb-4">Thông tin sản phẩm</h2>
+            <h2 className="text-2xl font-bold mb-4">Product info</h2>
 
             <div className="flex flex-col gap-4">
                 {cartItems.map((item) => {
@@ -32,10 +32,10 @@ const OrderItems = ({ cartItems }) => {
                                 <p className="font-medium text-lg">{item.name}</p>
                                 {item.shopName && <p className="text-sm text-gray-500">{item.shopName}</p>}
                                 <p className="text-sm text-gray-600">
-                                    Đơn giá: {itemPrice.toLocaleString('vi-VN')}₫
+                                    Unit price: {itemPrice.toLocaleString('vi-VN')}₫
                                 </p>
                                 <p className="text-sm text-gray-600">
-                                    Số lượng: {item.quantity || 0}
+                                    Quantiy: {item.quantity || 0}
                                 </p>
                             </div>
                             <p className="font-semibold text-lg">

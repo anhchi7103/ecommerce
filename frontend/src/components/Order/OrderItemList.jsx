@@ -5,21 +5,23 @@ export default function OrderItemList({ items }) {
 
     return (
         <div className="text-sm space-y-4">
-            <h3 className="font-semibold text-gray-800">Sản phẩm</h3>
-            {items.map((item) => (
+            <h3 className="font-semibold text-gray-800">Product</h3>
+            {items.map((item, idx) => (
                 <div
-                    key={item.name}
+                    key={item.product_name || idx}
                     className="flex items-center border rounded-lg p-3 shadow-sm"
                 >
                     <img
-                        src={item.image}
-                        alt={item.name}
+                        src={item.image_url || item.image || 'https://via.placeholder.com/64'}
+                        alt={item.product_name || 'Product'}
                         className="w-16 h-16 object-cover rounded-md mr-4"
                     />
                     <div className="flex-1">
-                        <div className="font-medium text-gray-900">{item.name}</div>
-                        <div className="text-gray-600">Số lượng: {item.quantity}</div>
-                        <div className="text-gray-600">Giá: {item.price.toLocaleString()} đ</div>
+                        <div className="font-medium text-gray-900">{item.product_name || item.name}</div>
+                        <div className="text-gray-600">Quantity: {item.quantity ?? 'N/A'}</div>
+                        <div className="text-gray-600">
+                            Price: {(item.item_price || item.price || 0).toLocaleString()} đ
+                        </div>
                     </div>
                 </div>
             ))}
@@ -27,13 +29,14 @@ export default function OrderItemList({ items }) {
     );
 }
 
+
 OrderItemList.propTypes = {
     items: PropTypes.arrayOf(
         PropTypes.shape({
-            image: PropTypes.string.isRequired,
-            name: PropTypes.string.isRequired,
+            product_name: PropTypes.string.isRequired,
+            image_url: PropTypes.string,
             quantity: PropTypes.number.isRequired,
-            price: PropTypes.number.isRequired,
+            item_price: PropTypes.number,
         })
     ).isRequired,
 };

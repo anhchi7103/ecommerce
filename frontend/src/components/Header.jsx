@@ -91,9 +91,9 @@ const Header = () => {
                     <button onClick={handleShopManageClick} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b border-gray-200">
                       My Shop
                     </button>
-                    <NavLink to="" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b border-gray-200">
+                     <NavLink to="/purchasehistory" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b border-gray-200">
                       My Order
-                    </NavLink>
+                     </NavLink>
                     <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100" > Logout
                     </button>
                   </div>

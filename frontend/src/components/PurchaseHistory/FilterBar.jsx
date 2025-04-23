@@ -3,13 +3,13 @@
 import PropTypes from 'prop-types';
 
 const FILTERS = [
-    'Tất cả',
-    'Chờ thanh toán',
-    'Vận chuyển',
-    'Chờ giao hàng',
-    'Hoàn thành',
-    'Đã hủy',
-    'Trả hàng/Hoàn tiền'
+    'All',
+    'Pending Payment',
+    'Shipping',
+    'Awaiting Delivery',
+    'Completed',
+    'Cancelled',
+    'Return/Refund'
 ];
 
 export default function FilterBar({ selected, onSelect }) {

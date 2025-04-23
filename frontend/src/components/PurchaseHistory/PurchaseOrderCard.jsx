@@ -1,7 +1,7 @@
 ﻿// src/components/PurchaseHistory/PurchaseOrderCard.jsx
-//import React from 'react';
 import PropTypes from 'prop-types';
 import OrderItemList from '../Order/OrderItemList';
+import { Link } from 'react-router-dom';
 
 export default function PurchaseOrderCard({ order }) {
     const { shop, orderId, status, items, summary } = order;
@@ -12,8 +12,19 @@ export default function PurchaseOrderCard({ order }) {
                 <span className="text-sm px-3 py-1 bg-blue-100 text-blue-600 rounded-full">{status.currentStatus}</span>
             </div>
             <OrderItemList items={items} />
+
             <div className="flex justify-end text-base font-semibold">
-                Thành tiền: {summary.total.toLocaleString()} đ
+                Total: {summary.total.toLocaleString()} đ
+            </div>
+
+            {/* ✅ Cập nhật đường dẫn đúng để xem chi tiết */}
+            <div className="flex justify-end">
+                <Link
+                    to={`/orderlist/${orderId}`}
+                    className="mt-2 inline-block text-sm text-blue-600 hover:underline font-medium"
+                >
+                    View details
+                </Link>
             </div>
         </div>
     );

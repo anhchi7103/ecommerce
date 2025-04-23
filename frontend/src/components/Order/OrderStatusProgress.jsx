@@ -11,11 +11,11 @@ import {
 
 // Định nghĩa thứ tự và icon cho mỗi bước
 const STEPS = [
-    { key: 'Đơn hàng đã đặt', label: 'Đơn hàng đã đặt', icon: FaShoppingCart },
-    { key: 'Đã xác nhận thông tin thanh toán', label: 'Xác nhận thanh toán', icon: FaCreditCard },
-    { key: 'Đã giao cho ĐVVC', label: 'Giao cho ĐVVC', icon: FaTruck },
-    { key: 'Đã nhận được hàng', label: 'Đã nhận hàng', icon: FaBox },
-    { key: 'Đơn hàng đã hoàn thành', label: 'Hoàn thành', icon: FaCheckCircle },
+    { key: 'Order Placed', label: 'Order Placed', icon: FaShoppingCart },
+    { key: 'Payment Confirmed', label: 'Payment Confirmed', icon: FaCreditCard },
+    { key: 'Shipped to Carrier', label: 'Shipped to Carrier', icon: FaTruck },
+    { key: 'Delivered', label: 'Delivered', icon: FaBox },
+    { key: 'Order Completed', label: 'Completed', icon: FaCheckCircle },
 ];
 
 export default function OrderStatusProgress({ history }) {
@@ -55,8 +55,8 @@ export default function OrderStatusProgress({ history }) {
                         {idx < STEPS.length - 1 && (
                             <div
                                 className={`flex-1 h-0.5 mx-2 ${doneStatuses.has(STEPS[idx + 1].key)
-                                        ? 'bg-blue-600'
-                                        : 'bg-gray-300'
+                                    ? 'bg-blue-600'
+                                    : 'bg-gray-300'
                                     }`}
                             />
                         )}

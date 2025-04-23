@@ -63,7 +63,7 @@ export default function Checkout() {
                 const res = await fetch(`http://localhost:4000/get-shop-by-id/${firstProduct.shop_id}`);
                 const data = await res.json();
                 if (data.success) {
-                    setShopName(data.shop?.shop_name || 'Shop không tên');
+                    setShopName(data.shop?.shop_name || 'Unknown');
                     setShopId(firstProduct.shop_id);
                 }
             } catch (err) {
@@ -76,7 +76,7 @@ export default function Checkout() {
     }, [mergedCartItems]);
 
     const handleConfirm = async () => {
-        if (!userId) return alert("Bạn chưa đăng nhập!");
+        if (!userId) return alert("You are not logged in!");
 
         try {
             const items = mergedCartItems.map(item => ({
@@ -124,23 +124,27 @@ export default function Checkout() {
             console.log('Payload gửi:', payload);
 
             const res = await axios.post('http://localhost:4000/api/orders', payload);
+            console.log('✅ Order API response:', res);
+
             if (res.status === 201) {
-                alert('🎉 Đặt hàng thành công! Mã đơn hàng: ' + res.data.order_id);
+                alert('🎉 Order placed successfully! Order ID: ' + res.data.order_id);
                 clearCart();
             }
         } catch (err) {
             console.error('Checkout error:', err);
-            alert('❌ Không thể tạo đơn hàng!');
+            alert('❌ Failed to create order!');
         }
     };
 
     return (
         <div className="max-w-4xl mx-auto p-4 space-y-6">
-            <h1 className="text-2xl font-bold">Thanh toán</h1>
+            <h1 className="text-2xl font-bold">Payment</h1>
 
             {shopName && (
-                <div className="bg-white p-3 rounded shadow text-sm text-gray-600 italic">
-                    🏪 Mua hàng từ: <strong>{shopName}</strong>
+                <div className="bg-white p-3 rounded shadow text-gray-700">
+                    <p className="text-base md:text-lg font-medium italic">
+                        🏪 Purchased from: <strong>{shopName}</strong>
+                    </p>
                 </div>
             )}
 
@@ -154,7 +158,7 @@ export default function Checkout() {
                 className="block w-full py-3 bg-black text-white font-semibold rounded"
                 disabled={mergedCartItems.length === 0}
             >
-                Đặt hàng
+                Place Order
             </button>
         </div>
     );

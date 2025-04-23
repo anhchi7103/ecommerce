@@ -61,13 +61,13 @@ export default function ShippingInfo({ onChange }) {
 
     return (
         <section className="my-6 p-4 bg-white rounded shadow">
-            <h3 className="text-lg font-semibold mb-2">Địa chỉ nhận hàng</h3>
+            <h3 className="text-lg font-semibold mb-2">Shipping address</h3>
 
             {/* Họ tên */}
             <input
                 className="block w-full mb-2 p-2 border rounded bg-gray-100"
                 name="name"
-                placeholder="Họ tên"
+                placeholder="Full name"
                 value={info.name}
                 readOnly
             />
@@ -76,7 +76,7 @@ export default function ShippingInfo({ onChange }) {
             <input
                 className="block w-full mb-2 p-2 border rounded bg-gray-100"
                 name="street"
-                placeholder="Đường/Số nhà"
+                placeholder="Street / House Number"
                 value={info.street}
                 readOnly
             />
@@ -85,7 +85,7 @@ export default function ShippingInfo({ onChange }) {
             <input
                 className="block w-full mb-2 p-2 border rounded bg-gray-100"
                 name="city"
-                placeholder="Thành phố"
+                placeholder="City"
                 value={info.city}
                 readOnly
             />
@@ -94,7 +94,7 @@ export default function ShippingInfo({ onChange }) {
             <input
                 className="block w-full mb-2 p-2 border rounded bg-gray-100"
                 name="country"
-                placeholder="Quốc gia"
+                placeholder="Country"
                 value={info.country}
                 readOnly
             />
@@ -103,7 +103,7 @@ export default function ShippingInfo({ onChange }) {
             <input
                 className="block w-full mb-2 p-2 border rounded bg-gray-100"
                 name="phone"
-                placeholder="Số điện thoại"
+                placeholder="Phone number"
                 value={info.phone}
                 readOnly
             />

@@ -6,12 +6,12 @@ export default function OrderShippingInfo({ shipping }) {
 
     return (
         <div className="text-sm space-y-1">
-            <h3 className="font-semibold text-gray-800 mb-1">Thông tin vận chuyển</h3>
+            <h3 className="font-semibold text-gray-800 mb-1">Shipping info</h3>
             <div>
-                <strong>Đơn vị vận chuyển:</strong> {shipping.provider}
+                <strong>Shipping unit:</strong> {shipping.provider}
             </div>
             <div>
-                <strong>Mã vận đơn:</strong> {shipping.trackingNumber}
+                <strong>Tracking number:</strong> {shipping.trackingNumber}
             </div>
         </div>
     );

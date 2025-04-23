@@ -3,7 +3,7 @@
 export default function PaymentMethod({ selected, onChange }) {
     return (
         <section className="my-6 p-4 bg-white rounded shadow">
-            <h3 className="text-lg font-semibold mb-2">Phương thức thanh toán</h3>
+            <h3 className="text-lg font-semibold mb-2">Payment method</h3>
 
             <label className="inline-flex items-center mr-4">
                 <input
@@ -14,7 +14,7 @@ export default function PaymentMethod({ selected, onChange }) {
                     onChange={onChange}
                     className="mr-2"
                 />
-                COD (Thanh toán khi nhận hàng)
+                COD (Cash on Delivery)
             </label>
 
             <label className="inline-flex items-center">

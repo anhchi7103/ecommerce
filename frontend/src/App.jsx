@@ -69,7 +69,7 @@ export default function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
           <Route path="/checkout" element={<Checkout />} />
-          <Route path="/orderlist" element={<OrderList />} />
+          <Route path="/orderlist/:orderId" element={<OrderList />} />
           <Route path="/purchasehistory" element={<PurchaseHistory />} />
           <Route path="/register-shop/:userId" element={<RegisterShop />} />
           {/* Admin/shop routes */}
