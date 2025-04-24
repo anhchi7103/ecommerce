@@ -187,6 +187,12 @@ app.get('/user/:userId', async (req, res) => {
     }
 });
 
+app.get('/get-allusers', async (req, res) => {
+    let users = await User.find({});
+    console.log("All users fetched.");
+    res.send(users);
+})
+
 // Shops (MongoDB)
 app.get('/shop/:shopId', async (req, res) => {
     try {
@@ -244,7 +250,11 @@ app.post('/register-shop/:userId', async (req, res) => {
     }
 });
 
+const recommendRoute = require('./routes/recommendationRoute');
+app.use('/recommend', recommendRoute);
+
 // Final Server Listen
 app.listen(PORT, () => {
     console.log(`🚀 Server is running on http://localhost:${PORT}`);
 });
+
