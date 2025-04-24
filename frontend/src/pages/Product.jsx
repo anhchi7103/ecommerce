@@ -26,6 +26,9 @@ const Product = () => {
     fetchData();
   }, []);
 
+  console.log(suggestProductsbyUser)
+  console.log(suggestProductByProductId)
+
   const filteredSuggestionsByUser = suggestProductsbyUser.filter(item => item._id !== product._id);
   const filteredSuggestionsByProductId = suggestProductByProductId.filter(item => item._id !== product._id);
 

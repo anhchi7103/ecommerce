@@ -20,7 +20,7 @@ router.get('/user/:userId', async (req, res) => {
     );
 
     const collaborative = result.records.map(r => ({
-      _id: r.get('productId').toNumber(),
+      _id: r.get('productId'),
       name: r.get('product'),
     }));
     
@@ -45,35 +45,35 @@ router.get('/product/:productId', async (req, res) => {
   try {
     // 1. SAME_CATEGORY
     const sameCategoryResult = await session.run(
-      `MATCH (p1:Product {product_id: toInteger($productId)})-[:SAME_CATEGORY]-(p2:Product)
+      `MATCH (p1:Product {product_id: $productId })-[:SAME_CATEGORY]-(p2:Product)
        RETURN DISTINCT p2.name AS product, p2.product_id AS productId`,
       { productId }
     );
     const sameCategory = sameCategoryResult.records.map(r => ({
-      _id: r.get('productId').toNumber(),
+      _id: r.get('productId'),
       name: r.get('product'),
     }));
 
     // 2. BOUGHT_TOGETHER
     const boughtTogetherResult = await session.run(
-      `MATCH (p1:Product {product_id: toInteger($productId)})-[:BOUGHT_TOGETHER]-(p2:Product)
+      `MATCH (p1:Product {product_id: $productId})-[:BOUGHT_TOGETHER]-(p2:Product)
        RETURN DISTINCT p2.name AS product, p2.product_id AS productId`,
       { productId }
     );
     const boughtTogether = boughtTogetherResult.records.map(r => ({
-      _id: r.get('productId').toNumber(),
+      _id: r.get('productId'),
       name: r.get('product'),
     }));
 
     // 3. SAME_SHOP
     const sameShopResult = await session.run(
-      `MATCH (p1:Product {product_id: toInteger($productId)})<-[:OWNS]-(s:Shop)-[:OWNS]-(p2:Product)
+      `MATCH (p1:Product {product_id: $productId})<-[:OWNS]-(s:Shop)-[:OWNS]-(p2:Product)
        WHERE p1 <> p2
        RETURN DISTINCT p2.name AS product, p2.product_id AS productId` ,
       { productId }
     );
     const sameShop = sameShopResult.records.map(r => ({
-      _id: r.get('productId').toNumber(),
+      _id: r.get('productId'),
       name: r.get('product'),
     }));
 

@@ -68,6 +68,7 @@ const ShopContextProvider = (props) => {
                     const { collaborative } = data.suggestions;
 
                     const fullInfoSuggestions = collaborative.map(suggested => {
+                        suggested._id = parseInt(suggested._id, 10);
                         const fullInfo = all_products.find(product => product._id === suggested._id);
                         return {
                           ...suggested,
@@ -296,6 +297,7 @@ const ShopContextProvider = (props) => {
 
         const uniqueProductsMap = new Map();
         allSuggestions.forEach(product => {
+          product._id = parseInt(product._id, 10);
           if (!uniqueProductsMap.has(product._id)) {
             uniqueProductsMap.set(product._id, product);
           }
