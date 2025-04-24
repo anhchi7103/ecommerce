@@ -50,10 +50,7 @@ async function testConnection() {
         console.log(result.records[0].get('message'));
     } catch (error) {
         console.error('❌ Neo4j connection error:', error);
-    } finally {
-        await session.close();
-        await driver.close();
-    }
+    } 
 }
 testConnection();
 
@@ -98,7 +95,7 @@ app.post("/upload", upload.single('product'), (req, res) => {
     });
 });
 
-// Product Management (MongoDB)
+// Product Management (MongoDB, Neo4j)
 app.post('/addproduct', async (req, res) => {
     let products = await Product.find({});
     let id = products.length > 0 ? Number(products.slice(-1)[0]._id) + 1 : 1;
@@ -117,6 +114,33 @@ app.post('/addproduct', async (req, res) => {
     });
 
     await product.save();
+
+    // Insert new node Shop into Neo4j
+    driver.session();
+    await session.run(`
+        MATCH (s:Shop {shop_id: $shopId})
+        CREATE (p:Product {
+            product_id: $productId,
+            name: $name,
+            category: $category
+        })
+        CREATE (s)-[:OWNS]->(p)
+    `, {
+        shopId: product.shop_id.toString(),
+        productId: product._id.toString(),
+        name: product.name,
+        category: product.category
+    });
+    await session.run(`
+        MATCH (newProd:Product {product_id: $productId})
+        MATCH (other:Product)
+        WHERE other.category = $category AND other.product_id <> $productId
+        MERGE (newProd)-[:SAME_CATEGORY]->(other)
+        MERGE (other)-[:SAME_CATEGORY]->(newProd)
+    `, {
+        productId: product._id.toString(),
+        category: product.category
+    });
     res.json({ success: true, name: req.body.name });
 });
 
@@ -130,7 +154,7 @@ app.get('/get-allproducts', async (req, res) => {
     res.send(products);
 });
 
-// User Authentication (MongoDB)
+// User Authentication (MongoDB, Neo4j)
 app.post('/signup', async (req, res) => {
     try {
         const { email, username, first_name, last_name, phone_number, password_hash } = req.body;
@@ -157,12 +181,21 @@ app.post('/signup', async (req, res) => {
         });
 
         await user.save();
-        res.status(201).json({ success: true });
 
+        // Insert new node User into Neo4j
+        driver.session();
+        await session.run(
+        'CREATE (u:User {user_id: $id, username: $username})',
+        {
+            id: user._id.toString(),
+            username: user.username,
+        }
+        );
+        res.status(201).json({ success: true });
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, error: "Internal server error" });
-    }
+    } 
 });
 
 app.post('/login', async (req, res) => {
@@ -187,7 +220,13 @@ app.get('/user/:userId', async (req, res) => {
     }
 });
 
-// Shops (MongoDB)
+app.get('/get-allusers', async (req, res) => {
+    let users = await User.find({});
+    console.log("All users fetched.");
+    res.send(users);
+})
+
+// Shops (MongoDB, Neo4j)
 app.get('/shop/:shopId', async (req, res) => {
     try {
         const products = await Product.find({ shop_id: req.params.shopId });
@@ -236,6 +275,16 @@ app.post('/register-shop/:userId', async (req, res) => {
         });
 
         await shop.save();
+
+        // Insert new node Shop into Neo4j
+        driver.session();
+        await session.run(
+        'CREATE (s:Shop {shop_id: $id, name: $shop_name})',
+        {
+            id: shop._id.toString(),
+            shop_name: shop.shop_name,
+        }
+        );
         res.status(201).json({ success: true, shop_name: shop.shop_name });
 
     } catch (err) {
@@ -244,7 +293,11 @@ app.post('/register-shop/:userId', async (req, res) => {
     }
 });
 
+const recommendRoute = require('./routes/recommendationRoute');
+app.use('/recommend', recommendRoute);
+
 // Final Server Listen
 app.listen(PORT, () => {
     console.log(`🚀 Server is running on http://localhost:${PORT}`);
 });
+

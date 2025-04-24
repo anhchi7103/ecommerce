@@ -15,6 +15,7 @@ const ShopContextProvider = (props) => {
     const [cartItems, setCartItems] = useState({});
     const [all_products, setAll_products] = useState([]);
     const [triggerRender, setTriggerRender] = useState(false);
+    const [suggestProductsbyUser, setSuggestProductsbyUser] = useState([]);
 
     //fetch products
     useEffect(() => {
@@ -55,6 +56,34 @@ const ShopContextProvider = (props) => {
         fetchCart();
     }, []);
 
+    useEffect(()=> {
+
+        const userId = localStorage.getItem("UserID");
+        const fetchSuggestProductsbyUser = async () => {
+            try {
+                const res = await fetch(`http://localhost:4000/recommend/user/${userId}`);
+                const data = await res.json();
+
+                if (data.success) {
+                    const { collaborative } = data.suggestions;
+
+                    const fullInfoSuggestions = collaborative.map(suggested => {
+                        suggested._id = parseInt(suggested._id, 10);
+                        const fullInfo = all_products.find(product => product._id === suggested._id);
+                        return {
+                          ...suggested,
+                          images: fullInfo?.images,
+                          price: fullInfo?.price,
+                        };
+                      });
+                    setSuggestProductsbyUser(fullInfoSuggestions);
+                }
+            } catch (err) {
+                console.error('Error fetching cart:', err);
+            }
+        };
+        fetchSuggestProductsbyUser();
+    }, [all_products])
     const addToCart = async (product, quantity = 1) => {
         const userId = localStorage.getItem("UserID"); // get userId dynamically
 
@@ -256,10 +285,41 @@ const ShopContextProvider = (props) => {
         return data.order_id;
     };
 
+    const fetchSuggestedProductsbyProductId = async (productId) => {
+        const res = await fetch(`http://localhost:4000/recommend/product/${productId}`);
+        const data = await res.json();
+        
+        const allSuggestions = [
+            ...(data.suggestions.sameCategory || []),
+            ...(data.suggestions.boughtTogether || []),
+            ...(data.suggestions.sameShop || [])
+        ];
+
+        const uniqueProductsMap = new Map();
+        allSuggestions.forEach(product => {
+          product._id = parseInt(product._id, 10);
+          if (!uniqueProductsMap.has(product._id)) {
+            uniqueProductsMap.set(product._id, product);
+          }
+        });
+      
+        const uniqueProducts = Array.from(uniqueProductsMap.values());
+
+        const fullInfoSuggestions = uniqueProducts.map(suggested => {
+            const fullInfo = all_products.find(product => product._id === suggested._id);
+            return {
+              ...suggested,
+              images: fullInfo?.images,
+              price: fullInfo?.price,
+            };
+        });
+        
+        return fullInfoSuggestions;
+    } 
 
     const contextValue = {
         all_products, cartItems, addToCart, removeFromCart, getTotalCartAmount, getTotalCartItems, triggerRender, setTriggerRender,
-        clearCart, checkout
+        clearCart, checkout, suggestProductsbyUser, fetchSuggestedProductsbyProductId
     };
 
     return (
