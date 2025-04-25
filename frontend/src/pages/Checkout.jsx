@@ -52,7 +52,6 @@ export default function Checkout() {
     useEffect(() => {
         if (mergedCartItems.length === 0) return;
         const firstProduct = mergedCartItems[0];
-        console.log("firstProduct is:", firstProduct);
 
         if (!firstProduct?.shop_id) {
             return;

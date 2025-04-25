@@ -74,7 +74,7 @@ const CartItems = () => {
                             </div>
                             <hr />
                         </div>
-                        <NavLink to="/checkout" className='btn_dark_rounded w-44'>Thanh toán</NavLink>
+                        <NavLink to="/checkout" className='btn_dark_rounded w-44 flexCenter'>Checkout</NavLink>
                     </div>
                 </div>
             </div>
